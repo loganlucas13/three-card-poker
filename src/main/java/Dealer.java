@@ -20,4 +20,23 @@ public class Dealer {
         // TODO: implement
         return null;
     }
+
+
+    // getters and setters
+
+    // theDeck
+    public Deck getDeck() {
+        return this.theDeck;
+    }
+    public void setDeck(Deck deck) {
+        this.theDeck = deck;
+    }
+
+    // dealersHand
+    public ArrayList<Card> getDealersHand() {
+        return this.dealersHand;
+    }
+    public void setDealersHand(ArrayList<Card> dealersHand) {
+        this.dealersHand = dealersHand;
+    }
 }
