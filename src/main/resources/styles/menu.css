@@ -1,0 +1,37 @@
+
+.label {
+    -fx-alignment: top-center;
+    -fx-background-color: #f2f1da;
+    -fx-padding: 15px;
+    -fx-border-width: 10px;
+    -fx-border-color: #d3c490;
+}
+
+#title {
+    -fx-font-size: 50;
+}
+
+#welcomeText {
+    -fx-font-size: 25;
+}
+
+.button {
+    -fx-font-size: 30;
+    -fx-background-color: #f2f1da;
+    -fx-padding: 15px;
+    -fx-border-width: 10px;
+    -fx-border-color: #d3c490;
+}
+.button:hover {
+    -fx-text-fill: #f2f1da;
+    -fx-background-color: #d5d4b0;
+    -fx-border-color: #afa278;
+}
+
+#quitButton {
+    -fx-text-fill: #b74c4d;
+}
+#quitButton:hover {
+    -fx-background-color: #732f30;
+    -fx-border-color: #993e3f;
+}
