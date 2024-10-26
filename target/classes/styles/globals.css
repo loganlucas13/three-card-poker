@@ -8,6 +8,13 @@
     -fx-background-color: #34722e;
 }
 
+.label {
+    -fx-background-color: #f2f1da;
+    -fx-padding: 15px;
+    -fx-border-width: 10px;
+    -fx-border-color: #d3c490;
+}
+
 .button {
     -fx-background-insets: 0 ;
 }
