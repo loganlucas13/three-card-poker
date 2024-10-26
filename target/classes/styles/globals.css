@@ -5,7 +5,7 @@
 
 .root {
     -fx-font-family: '04b25';
-    -fx-background-color: #34722e;
+    -fx-background-color: #486a1f;
 }
 
 .label {
@@ -16,7 +16,7 @@
 }
 
 .button {
-    -fx-background-insets: 0 ;
+    -fx-background-insets: 0;
 }
 .button:hover {
     -fx-opacity: 95%;
