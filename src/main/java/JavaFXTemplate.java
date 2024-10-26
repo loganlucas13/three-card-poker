@@ -14,6 +14,9 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+// Logan Lucas and Jonathan Kang
+// netid: lluca5
+// netid: jkang87
 
 public class JavaFXTemplate extends Application {
 
