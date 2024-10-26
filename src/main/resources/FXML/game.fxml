@@ -4,7 +4,16 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuItem?>
 
-<VBox xmlns:fx="http://javafx.com/fxml/1" fx:controller="GameController" stylesheets="@../styles/globals.css, @../styles/game.css" alignment="CENTER" spacing="100">
-
+<VBox xmlns:fx="http://javafx.com/fxml/1" fx:controller="GameController" stylesheets="@../styles/globals.css, @../styles/game.css" spacing="100">
+    <MenuBar>
+            <Menu text="OPTIONS">
+                <MenuItem fx:id="freshStartButton" text="FRESH START"></MenuItem>
+                <MenuItem fx:id="newLookButton" text="NEWLOOK"></MenuItem>
+                <MenuItem fx:id="exitButton" text="EXIT"></MenuItem>
+            </Menu>
+    </MenuBar>
 </VBox>

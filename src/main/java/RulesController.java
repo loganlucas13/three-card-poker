@@ -35,7 +35,7 @@ public class RulesController implements Initializable {
         // event handler to return to menu
         this.menuButton.setOnAction(event -> {
             try {
-                goToMenu();
+                this.goToMenu();
             }
             catch (Exception e) {
                 System.err.println("goToMenu() error!\n");

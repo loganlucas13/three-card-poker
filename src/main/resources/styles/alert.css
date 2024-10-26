@@ -1,0 +1,39 @@
+@font-face {
+    font-family: '04B_25__';
+    src: url('styles/fonts/04B_25__.TTF');
+}
+
+.root {
+    -fx-font-family: '04b25';
+    -fx-background-color: #486a1f;
+    -fx-font-size: 20;
+}
+
+.alert .header-panel {
+    -fx-background-color: #f2f1da;
+    -fx-padding: 5px;
+    -fx-border-width: 5px;
+    -fx-border-color: #d3c490;
+}
+
+.alert .content {
+    -fx-text-fill: #b74c4d;
+    -fx-background-color: #f2f1da;
+    -fx-padding: 5px;
+    -fx-border-width: 5px;
+    -fx-border-color: #d3c490;
+}
+
+.button {
+    -fx-background-color: #f2f1da;
+    -fx-padding: 5px;
+    -fx-border-width: 5px;
+    -fx-border-color: #d3c490;
+    -fx-background-insets: 0;
+}
+.button:hover {
+    -fx-cursor: HAND;
+    -fx-text-fill: #f2f1da;
+    -fx-background-color: #d5d4b0;
+    -fx-border-color: #afa278;
+}

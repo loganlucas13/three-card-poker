@@ -1,0 +1,52 @@
+.menu-bar {
+    -fx-background-color: #375018;
+    -fx-padding: 5px;
+}
+
+.menu {
+    -fx-background-color: transparent;
+    -fx-padding: 1px;
+}
+
+.menu .label {
+    -fx-font-size: 25;
+}
+.menu .label:hover {
+    -fx-text-fill: #f2f1da;
+    -fx-background-color: #d5d4b0;
+    -fx-border-color: #afa278;
+    -fx-scale-x: 1.01;
+    -fx-scale-y: 1.01;
+    -fx-scale-z: 1.01;
+}
+
+.menu-item {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 5 5 0 0;
+}
+.menu-item:focused {
+    -fx-scale-x: 1.01;
+    -fx-scale-y: 1.01;
+    -fx-scale-z: 1.01;
+    -fx-opacity: 90%;
+}
+.menu-item:focused .label {
+    -fx-text-fill: #f2f1da;
+    -fx-background-color: #d5d4b0;
+    -fx-border-color: #afa278;
+}
+
+.context-menu {
+    -fx-padding: 0;
+    -fx-background-color: transparent;
+    -fx-skin: "com.sun.javafx.scene.control.skin.ContextMenuSkin";
+}
+
+#exitButton .label {
+    -fx-text-fill: #b74c4d;
+}
+#exitButton:focused .label {
+    -fx-background-color: #732f30;
+    -fx-border-color: #993e3f;
+}

@@ -62,7 +62,7 @@ public class MenuController implements Initializable{
         // event handler to start the game
         this.playButton.setOnAction(event -> {
             try {
-                startGame();
+                this.startGame();
             }
             catch (Exception e) {
                 System.err.println("startGame() error!\n");
@@ -72,7 +72,7 @@ public class MenuController implements Initializable{
         // event handler to display rules
         this.rulesButton.setOnAction(event -> {
             try {
-                displayRules();
+                this.displayRules();
             }
             catch (Exception e) {
                 System.err.println("displayRules() error!\n");
@@ -82,7 +82,7 @@ public class MenuController implements Initializable{
         // event handler to exit game
         this.quitButton.setOnAction(event -> {
             try {
-                quitGame();
+                this.quitGame();
             }
             catch (Exception e) {
                 System.err.println("quitGame() error!\n");
