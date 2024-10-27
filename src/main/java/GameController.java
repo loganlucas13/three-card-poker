@@ -149,6 +149,10 @@ public class GameController implements Initializable {
         }
 
         int randomIndex = (int) (Math.random() * 8);
+        // the while loop prevents the same backing from being picked twice in a row
+        while (filenames.get(randomIndex).equals(this.cardBackFileName)) {
+            randomIndex = (int) (Math.random() * 8);
+        }
 
         this.cardBackFileName = filenames.get(randomIndex);
 
@@ -625,8 +629,6 @@ public class GameController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        this.cardBackFileName = "/images/deck-of-cards/Back2.png"; // default card backing
-
         try {
             this.initializeMenu();
             this.resetGame();
