@@ -63,11 +63,11 @@
     -fx-border-color: #993e3f;
 }
 
-.playerWinningsBox {
+.textBox {
     -fx-padding: 2.5px;
     -fx-font-size: 20px;
 }
-.playerWinningsBox .label {
+.textBox .label {
     -fx-padding: 5px;
     -fx-alignment: center;
     -fx-border-width: 5px;
@@ -91,4 +91,60 @@
     -fx-font-size: 20;
     -fx-padding: 5px;
     -fx-border-width: 5px;
+}
+
+.increaseBetButton {
+    -fx-text-fill: #375018;
+    -fx-font-size: 20;
+    -fx-padding: 5px;
+    -fx-border-width: 5px;
+    -fx-text-alignment: center;
+    -fx-background-color: #f2f1da;
+    -fx-border-color: #d3c490;
+}
+.increaseBetButton:hover {
+    -fx-background-color: #749b43;
+    -fx-border-color: #2d4212;
+}
+
+.decreaseBetButton {
+    -fx-text-fill: #b74c4d;
+    -fx-font-size: 20;
+    -fx-padding: 5px;
+    -fx-border-width: 5px;
+    -fx-text-alignment: center;
+    -fx-background-color: #f2f1da;
+    -fx-border-color: #d3c490;
+}
+.decreaseBetButton:hover {
+    -fx-background-color: #732f30;
+    -fx-border-color: #993e3f;
+}
+
+.confirmButton {
+    -fx-text-fill: #375018;
+    -fx-font-size: 20;
+    -fx-padding: 5px;
+    -fx-border-width: 5px;
+    -fx-text-alignment: center;
+    -fx-background-color: #f2f1da;
+    -fx-border-color: #d3c490;
+}
+.confirmButton:hover {
+    -fx-background-color: #749b43;
+    -fx-border-color: #2d4212;
+}
+
+.foldButton {
+    -fx-text-fill: #b74c4d;
+    -fx-font-size: 20;
+    -fx-padding: 5px;
+    -fx-border-width: 5px;
+    -fx-text-alignment: center;
+    -fx-background-color: #f2f1da;
+    -fx-border-color: #d3c490;
+}
+.foldButton:hover {
+    -fx-background-color: #732f30;
+    -fx-border-color: #993e3f;
 }

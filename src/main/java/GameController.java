@@ -33,6 +33,20 @@ public class GameController implements Initializable {
     private Label player2Winnings;
 
     @FXML
+    private Label player1AnteBet;
+    @FXML
+    private Label player1PlayBet;
+    @FXML
+    private Label player1PairPlusBet;
+
+    @FXML
+    private Label player2AnteBet;
+    @FXML
+    private Label player2PlayBet;
+    @FXML
+    private Label player2PairPlusBet;
+
+    @FXML
     private ImageView dealerCard1;
     @FXML
     private ImageView dealerCard2;
@@ -125,8 +139,16 @@ public class GameController implements Initializable {
         this.player1Winnings.setText("$" + this.player1.getTotalWinnings());
         this.changeWinningsTextColor(player1, player1Winnings);
 
+        this.player1AnteBet.setText("$" + this.player1.getAnteBet());
+        this.player1PlayBet.setText("$" + this.player1.getPlayBet());
+        this.player1PairPlusBet.setText("$" + this.player1.getPairPlusBet());
+
         this.player2Winnings.setText("$" + this.player2.getTotalWinnings());
         this.changeWinningsTextColor(player2, player2Winnings);
+
+        this.player2AnteBet.setText("$" + this.player2.getAnteBet());
+        this.player2PlayBet.setText("$" + this.player2.getPlayBet());
+        this.player2PairPlusBet.setText("$" + this.player2.getPairPlusBet());
 
         this.setCardImage(this.dealerCard1, "/images/deck-of-cards/Back2.png");
         this.setCardImage(this.dealerCard2, "/images/deck-of-cards/Back2.png");
