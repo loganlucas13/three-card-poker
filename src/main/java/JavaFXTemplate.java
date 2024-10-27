@@ -12,6 +12,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
 // Logan Lucas and Jonathan Kang
@@ -34,6 +35,7 @@ public class JavaFXTemplate extends Application {
 		Parent root = FXMLLoader.load(getClass().getResource("FXML/menu.fxml"));
 
 		Scene scene = new Scene(root, 1250, 1000);
+		scene.setFill(null); // so scene background doesn't show when switching scenes
 
 		primaryStage.setScene(scene);
 		primaryStage.show();

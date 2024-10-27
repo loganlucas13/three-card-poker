@@ -2,9 +2,13 @@ import java.util.ArrayList;
 
 public class Dealer {
 
-    // data member(s)
+    // data members
+    // required
     private Deck theDeck;
     private ArrayList<Card> dealersHand;
+
+    // optional
+    private boolean hasFlipped;
 
 
     // constructor
@@ -38,5 +42,13 @@ public class Dealer {
     }
     public void setDealersHand(ArrayList<Card> dealersHand) {
         this.dealersHand = dealersHand;
+    }
+
+    // hasFlipped
+    public boolean getHasFlipped() {
+        return this.hasFlipped;
+    }
+    public void setHasFlipped(boolean hasFlipped) {
+        this.hasFlipped = hasFlipped;
     }
 }
