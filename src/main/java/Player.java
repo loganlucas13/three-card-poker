@@ -13,6 +13,11 @@ public class Player {
     // constructor
     public Player() {
         // TODO: implement
+        this.setHand(null);
+        this.setAnteBet(0);
+        this.setPlayBet(0);
+        this.setPairPlusBet(0);
+        this.setTotalWinnings(0);
     }
 
 

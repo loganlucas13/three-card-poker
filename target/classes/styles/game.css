@@ -1,6 +1,10 @@
+#topBar {
+    -fx-background-color: #375018;
+}
+
 .menu-bar {
     -fx-background-color: #375018;
-    -fx-padding: 5px;
+    -fx-padding: 10px;
 }
 
 .menu {
@@ -10,6 +14,8 @@
 
 .menu .label {
     -fx-font-size: 25;
+    -fx-min-width: 200px;
+    -fx-alignment: center;
 }
 .menu .label:hover {
     -fx-text-fill: #f2f1da;
@@ -18,6 +24,7 @@
     -fx-scale-x: 1.01;
     -fx-scale-y: 1.01;
     -fx-scale-z: 1.01;
+    -fx-cursor: HAND;
 }
 
 .menu-item {
@@ -25,11 +32,16 @@
     -fx-border-color: transparent;
     -fx-padding: 5 5 0 0;
 }
+.menu-item .label {
+    -fx-pref-width: 200px;
+    -fx-alignment: center;
+}
 .menu-item:focused {
     -fx-scale-x: 1.01;
     -fx-scale-y: 1.01;
     -fx-scale-z: 1.01;
     -fx-opacity: 90%;
+    -fx-cursor: HAND;
 }
 .menu-item:focused .label {
     -fx-text-fill: #f2f1da;
@@ -49,4 +61,34 @@
 #exitButton:focused .label {
     -fx-background-color: #732f30;
     -fx-border-color: #993e3f;
+}
+
+.playerWinningsBox {
+    -fx-padding: 2.5px;
+    -fx-font-size: 20px;
+}
+.playerWinningsBox .label {
+    -fx-padding: 5px;
+    -fx-alignment: center;
+    -fx-border-width: 5px;
+}
+
+/* next two classes change color of winnings text based on how much money the player has won */
+.winningsText.positive {
+    -fx-text-fill: #375018;
+}
+.winningsText.negative {
+    -fx-text-fill: #b74c4d;
+}
+
+.image-view:hover {
+    -fx-scale-x: 1.01;
+    -fx-scale-y: 1.01;
+    -fx-scale-z: 1.01;
+}
+
+.navLabel {
+    -fx-font-size: 20;
+    -fx-padding: 5px;
+    -fx-border-width: 5px;
 }
