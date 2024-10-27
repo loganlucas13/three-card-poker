@@ -122,6 +122,7 @@ public class GameController implements Initializable {
         this.cardBackFileName = "/images/deck-of-cards/Back2.png";
     }
 
+
     // event handler for exit button
     private void quitGame() throws Exception {
         Alert alert = new Alert(AlertType.CONFIRMATION, "ARE YOU SURE YOU WANT TO EXIT?");
@@ -137,6 +138,7 @@ public class GameController implements Initializable {
             }
         });
     }
+
 
     // event handler for new look button
     // updates card backing randomly
@@ -332,6 +334,7 @@ public class GameController implements Initializable {
         }
     }
 
+
     // confirms all bets and disables betting buttons for a single player
     private void confirmBets(Player player, ArrayList<Button> betButtons) {
         // under minimum ante bet
@@ -346,6 +349,7 @@ public class GameController implements Initializable {
         }
     }
 
+
     // folds hand and disables betting buttons for a single player
     private void fold(Player player, ArrayList<Button> betButtons) {
         player.setHasFolded(true);
@@ -354,6 +358,7 @@ public class GameController implements Initializable {
             betButtons.get(i).setDisable(true);
         }
     }
+
 
     // initializes the winnings display in the top right for a single player
     private void initializeWinnings(Player player, Label playerWinnings) {
