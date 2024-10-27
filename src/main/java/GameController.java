@@ -191,6 +191,10 @@ public class GameController implements Initializable {
                 increaseButton.setDisable(true);
                 return;
             }
+            else if (player.getAnteBet() == 24) {
+                player.setAnteBet(player.getAnteBet()+1);
+                increaseButton.setDisable(true);
+            }
             else if (player.getAnteBet() == 0) {
                 player.setAnteBet(player.getAnteBet()+5);
                 confirmButton.setDisable(false);
@@ -204,6 +208,10 @@ public class GameController implements Initializable {
             if (player.getPairPlusBet() >= 25) {
                 increaseButton.setDisable(true);
                 return;
+            }
+            else if (player.getPairPlusBet() == 24) {
+                player.setPairPlusBet(player.getPairPlusBet()+1);
+                increaseButton.setDisable(true);
             }
             else if (player.getPairPlusBet() == 0) {
                 player.setPairPlusBet(player.getPairPlusBet()+5);
@@ -231,15 +239,22 @@ public class GameController implements Initializable {
     // if ante <= 5, it is not updated (min $5 wager)
     // if pair plus <= 0, it is not updated (no negative bets)
     // valid betType parameters: "ante", "pair plus"
-    private void decreaseBet(Player player, Label betDisplay, String betType, Button decreaseButton) throws Exception {
+    private void decreaseBet(Player player, Label betDisplay, String betType, Button increaseButton, Button decreaseButton) throws Exception {
         if(betType.equals("ante")) {
-            if (player.getAnteBet() <= 6) {
+            if (player.getAnteBet() == 25) {
+                increaseButton.setDisable(false);
+            }
+            else if (player.getAnteBet() <= 6) {
                 decreaseButton.setDisable(true);
             }
             player.setAnteBet(player.getAnteBet()-1);
         }
         else if (betType.equals("pair plus")) {
-            if (player.getPairPlusBet() == 5) {
+            if (player.getPairPlusBet() == 25) {
+                player.setPairPlusBet(player.getPairPlusBet()-1);
+                increaseButton.setDisable(false);
+            }
+            else if (player.getPairPlusBet() == 5) {
                 player.setPairPlusBet(player.getPairPlusBet()-5);
                 decreaseButton.setDisable(true);
             }
@@ -463,7 +478,7 @@ public class GameController implements Initializable {
         });
         this.player1DecreaseAnteBet.setOnAction(event -> {
             try {
-                this.decreaseBet(this.player1, this.player1AnteBet, "ante", this.player1DecreaseAnteBet);
+                this.decreaseBet(this.player1, this.player1AnteBet, "ante", this.player1IncreaseAnteBet, this.player1DecreaseAnteBet);
             }
             catch (Exception e) {
                 System.err.println("player 1 ante bet update error!");
@@ -481,7 +496,7 @@ public class GameController implements Initializable {
         });
         this.player1DecreasePairPlusBet.setOnAction(event -> {
             try {
-                this.decreaseBet(this.player1, this.player1PairPlusBet, "pair plus", this.player1DecreasePairPlusBet);
+                this.decreaseBet(this.player1, this.player1PairPlusBet, "pair plus", this.player1IncreasePairPlusBet, this.player1DecreasePairPlusBet);
             }
             catch (Exception e) {
                 System.err.println("player 1 pair plus bet update error!");
@@ -575,7 +590,7 @@ public class GameController implements Initializable {
         });
         this.player2DecreaseAnteBet.setOnAction(event -> {
             try {
-                this.decreaseBet(this.player2, this.player2AnteBet, "ante", this.player2DecreaseAnteBet);
+                this.decreaseBet(this.player2, this.player2AnteBet, "ante", this.player2IncreaseAnteBet, this.player2DecreaseAnteBet);
             }
             catch (Exception e) {
                 System.err.println("player 2 ante bet update error!");
@@ -593,7 +608,7 @@ public class GameController implements Initializable {
         });
         this.player2DecreasePairPlusBet.setOnAction(event -> {
             try {
-                this.decreaseBet(this.player2, this.player2PairPlusBet, "pair plus", this.player2DecreasePairPlusBet);
+                this.decreaseBet(this.player2, this.player2PairPlusBet, "pair plus", this.player2IncreasePairPlusBet, this.player2DecreasePairPlusBet);
             }
             catch (Exception e) {
                 System.err.println("player 2 pair plus bet update error!");
