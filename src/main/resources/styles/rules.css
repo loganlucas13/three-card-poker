@@ -1,0 +1,45 @@
+#title {
+    -fx-font-size: 35;
+    /* next 3 lines are a workaround to create margins */
+    -fx-padding: 25px;
+    -fx-border-insets: 25px;
+    -fx-background-insets: 25px;
+}
+
+#ruleBlock {
+    -fx-font-size: 20;
+    -fx-background-color: #f2f1da;
+    -fx-padding: 10px;
+    -fx-border-width: 10px;
+    -fx-border-color: #d3c490;
+}
+
+#subText {
+    -fx-font-size: 15;
+    -fx-padding: 0 0 0 30;
+}
+
+#wagerTitle {
+    -fx-font-size: 25;
+}
+
+#wagerBlock {
+    -fx-font-size: 20;
+    -fx-background-color: #f2f1da;
+    -fx-padding: 10px;
+    -fx-border-width: 10px;
+    -fx-border-color: #d3c490;
+}
+
+.button {
+    -fx-font-size: 30;
+    -fx-background-color: #f2f1da;
+    -fx-padding: 15px;
+    -fx-border-width: 10px;
+    -fx-border-color: #d3c490;
+}
+.button:hover {
+    -fx-text-fill: #f2f1da;
+    -fx-background-color: #d5d4b0;
+    -fx-border-color: #afa278;
+}
