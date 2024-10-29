@@ -119,7 +119,7 @@ public class GameController implements Initializable {
         this.player1 = new Player();
         this.player2 = new Player();
 
-        this.cardBackFileName = "/images/deck-of-cards/Back2.png";
+        this.cardBackFileName = "/images/deck-of-cards/backs/Back2.png";
     }
 
 
@@ -144,7 +144,7 @@ public class GameController implements Initializable {
     // updates card backing randomly
     private void updateAppearance() throws Exception {
         ArrayList<String> filenames = new ArrayList<String>();
-        String defaultPath = "/images/deck-of-cards/Back";
+        String defaultPath = "/images/deck-of-cards/backs/Back";
 
         for (int i = 1; i <= 8; i++) {
             filenames.add(defaultPath+i+".png");
@@ -301,7 +301,7 @@ public class GameController implements Initializable {
 
     // sets card image from filename
     // turns off antialiasing of image
-    // example filename: '/images/deck-of-cards/Back1.png'
+    // example filename: '/images/deck-of-cards/backs/Back1.png'
     private void setCardImage(ImageView card, String filename) {
         Image cardImage = new Image(getClass().getResourceAsStream(filename));
         card.setImage(cardImage);
