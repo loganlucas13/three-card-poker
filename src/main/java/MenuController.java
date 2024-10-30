@@ -15,10 +15,8 @@ public class MenuController implements Initializable{
 
     @FXML
     private Button playButton;
-
     @FXML
     private Button rulesButton;
-
     @FXML
     private Button quitButton;
 

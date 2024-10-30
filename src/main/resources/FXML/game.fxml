@@ -14,6 +14,7 @@
 
 
 <VBox xmlns:fx="http://javafx.com/fxml/1" fx:controller="GameController" stylesheets="@../styles/globals.css, @../styles/game.css" spacing="10">
+    <!-- bar at top of the screen (includes the 'options' menu and winnings display) -->
     <HBox fx:id="topBar" alignment="TOP_LEFT">
         <MenuBar>
                 <Menu text="OPTIONS">
@@ -37,7 +38,9 @@
         </HBox>
     </HBox>
 
+    <!-- main gameplay display -->
     <VBox spacing="50">
+        <!-- dealer display -->
         <VBox alignment="TOP_CENTER" spacing="15">
             <Label text="DEALER" styleClass="navLabel"></Label>
             <HBox fx:id="dealerCards" alignment="TOP_CENTER" spacing="10">
@@ -47,15 +50,17 @@
             </HBox>
         </VBox>
 
+        <!-- player displays -->
         <HBox alignment="BOTTOM_CENTER" spacing="100">
-            <VBox fx:id="player1Controls" styleClass="playerControlsBox" alignment="BOTTOM_CENTER" spacing="20">
+            <!-- player 2 display -->
+            <VBox fx:id="player1Controls" styleClass="playerControlsBox" alignment="BOTTOM_CENTER" spacing="15">
                 <HBox fx:id="player1Cards" spacing="15">
                     <ImageView fx:id="player1Card1" fitWidth="85" fitHeight="130"></ImageView>
                     <ImageView fx:id="player1Card2" fitWidth="85" fitHeight="130"></ImageView>
                     <ImageView fx:id="player1Card3" fitWidth="85" fitHeight="130"></ImageView>
                 </HBox>
 
-                <VBox spacing="10">
+                <VBox spacing="2.5">
                     <HBox styleClass="textBox" spacing="5" maxWidth="285">
                         <Label text="ANTE:" minWidth="135"></Label>
                         <Label fx:id="player1AnteBet" text="placeholder" minWidth="60"></Label>
@@ -75,23 +80,27 @@
                         <Label fx:id="player1PlayBet" text="placeholder" minWidth="60"></Label>
                         <Button fx:id="player1IncreasePlayBet" styleClass="increaseBetButton" text="+" prefWidth="85"></Button>
                     </HBox>
+
+                    <HBox styleClass="textBox" spacing="5" maxWidth="285">
+                        <Button fx:id="player1ConfirmBets" styleClass="confirmButton" text="CONFIRM BETS" prefWidth="205"></Button>
+                        <Button fx:id="player1Fold" styleClass="foldButton" text="FOLD" prefWidth="80"></Button>
+                    </HBox>
                 </VBox>
-                <HBox spacing="5">
-                    <Button fx:id="player1ConfirmBets" styleClass="confirmButton" text="CONFIRM BETS" prefWidth="200"></Button>
-                    <Button fx:id="player1Fold" styleClass="foldButton" text="FOLD" prefWidth="80"></Button>
+                <HBox spacing="5" alignment="CENTER">
+                    <Label text="PLAYER 1" styleClass="navLabel"></Label>
+                    <Label fx:id="player1Balance" text="BALANCE: placeholder" styleClass="navLabel"></Label>
                 </HBox>
-                <Label text="PLAYER 1" styleClass="navLabel"></Label>
             </VBox>
 
-
-            <VBox fx:id="player2Controls" styleClass="playerControlsBox" alignment="BOTTOM_CENTER" spacing="20">
+            <!-- player 2 display -->
+            <VBox fx:id="player2Controls" styleClass="playerControlsBox" alignment="BOTTOM_CENTER" spacing="15">
                 <HBox fx:id="player2Cards" spacing="15">
                     <ImageView fx:id="player2Card1" fitWidth="85" fitHeight="130"></ImageView>
                     <ImageView fx:id="player2Card2" fitWidth="85" fitHeight="130"></ImageView>
                     <ImageView fx:id="player2Card3" fitWidth="85" fitHeight="130"></ImageView>
                 </HBox>
 
-                <VBox spacing="10">
+                <VBox spacing="2.5">
                     <HBox styleClass="textBox" spacing="5" maxWidth="285">
                         <Label text="ANTE:" minWidth="135"></Label>
                         <Label fx:id="player2AnteBet" text="placeholder" minWidth="60"></Label>
@@ -111,12 +120,16 @@
                         <Label fx:id="player2PlayBet" text="placeholder" minWidth="60"></Label>
                         <Button fx:id="player2IncreasePlayBet" styleClass="increaseBetButton" text="+" prefWidth="85"></Button>
                     </HBox>
+
+                    <HBox styleClass="textBox" spacing="5" maxWidth="285">
+                        <Button fx:id="player2ConfirmBets" styleClass="confirmButton" text="CONFIRM BETS" prefWidth="205"></Button>
+                        <Button fx:id="player2Fold" styleClass="foldButton" text="FOLD" prefWidth="80"></Button>
+                    </HBox>
                 </VBox>
-                <HBox spacing="5">
-                    <Button fx:id="player2ConfirmBets" styleClass="confirmButton" text="CONFIRM BETS" prefWidth="200"></Button>
-                    <Button fx:id="player2Fold" styleClass="foldButton" text="FOLD" prefWidth="80"></Button>
+                <HBox spacing="5" alignment="CENTER">
+                    <Label text="PLAYER 2" styleClass="navLabel"></Label>
+                    <Label fx:id="player2Balance" text="BALANCE: placeholder" styleClass="navLabel"></Label>
                 </HBox>
-                <Label text="PLAYER 2" styleClass="navLabel"></Label>
             </VBox>
         </HBox>
     </VBox>
