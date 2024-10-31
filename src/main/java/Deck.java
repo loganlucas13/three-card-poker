@@ -6,6 +6,7 @@ public class Deck extends ArrayList<Card> {
     // creates a new deck of 52 cards sorted in random order
     public Deck() {
         // TODO: complete!
+        this.add(null); // how to add a card
     }
 
 
