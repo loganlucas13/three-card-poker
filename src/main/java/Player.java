@@ -3,11 +3,16 @@ import java.util.ArrayList;
 public class Player {
 
     // data members
+    // required
     private ArrayList<Card> hand;
     private int anteBet;
     private int playBet;
     private int pairPlusBet;
     private int totalWinnings;
+
+    // optional
+    private boolean hasConfirmed;
+    private boolean hasFolded;
 
 
     // constructor
@@ -18,6 +23,7 @@ public class Player {
         this.setPlayBet(0);
         this.setPairPlusBet(0);
         this.setTotalWinnings(0);
+        this.setHasFolded(false);
     }
 
 
@@ -61,5 +67,21 @@ public class Player {
     }
     public void setTotalWinnings(int totalWinnings) {
         this.totalWinnings = totalWinnings;
+    }
+
+    // hasConfirmed
+    public boolean getHasConfirmed() {
+        return this.hasConfirmed;
+    }
+    public void setHasConfirmed(boolean hasConfirmed) {
+        this.hasConfirmed = hasConfirmed;
+    }
+
+    // hasFolded
+    public boolean getHasFolded() {
+        return this.hasFolded;
+    }
+    public void setHasFolded(boolean hasFolded) {
+        this.hasFolded = hasFolded;
     }
 }
