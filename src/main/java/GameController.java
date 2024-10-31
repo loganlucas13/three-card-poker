@@ -33,11 +33,6 @@ public class GameController implements Initializable {
     private Label player2Winnings;
 
     @FXML
-    private Label player1Balance;
-    @FXML
-    private Label player2Balance;
-
-    @FXML
     private Label player1AnteBet;
     @FXML
     private Label player1PlayBet;
@@ -180,131 +175,6 @@ public class GameController implements Initializable {
         // winnings boxes in the top right
         this.initializeWinnings(player1, player1Winnings);
         this.initializeWinnings(player2, player2Winnings);
-
-        // balance boxes below each player's betting buttons
-        this.refreshBalance(player1, player1Balance);
-        this.refreshBalance(player2, player2Balance);
-    }
-
-
-
-    private void increaseAnteBet(Player player, Label betDisplay, Button increaseButton, Button decreaseButton, Button confirmButton, Button pairPlusIncreaseButton) {
-        int bet = player.getAnteBet();
-        int remainingBalance = player.getBalance() - player.getPairPlusBet();
-
-        if (bet >= 25 || bet >= remainingBalance/2) {
-            increaseButton.setDisable(true);
-            return;
-        }
-        else if (bet == 24 || bet == remainingBalance/2 - 1) {
-            player.setAnteBet(bet+1);
-            increaseButton.setDisable(true);
-        }
-        else if (bet == 0) {
-            player.setAnteBet(bet+5);
-            confirmButton.setDisable(false);
-        }
-        else {
-            player.setAnteBet(bet+1);
-            decreaseButton.setDisable(false);
-        }
-
-        bet = player.getAnteBet();
-        if (remainingBalance - bet*2 < 5) {
-            pairPlusIncreaseButton.setDisable(true);
-        }
-    }
-
-
-    private void decreaseAnteBet(Player player, Label betDisplay, Button increaseButton, Button decreaseButton, Button confirmButton, Button pairPlusIncreaseButton) {
-        int bet = player.getAnteBet();
-        int remainingBalance = player.getBalance() - player.getPairPlusBet();
-
-        if (bet == 25 || bet == remainingBalance/2) {
-            increaseButton.setDisable(false);
-        }
-        else if (bet <= 6) {
-            decreaseButton.setDisable(true);
-        }
-        player.setAnteBet(bet-1);
-
-        bet = player.getAnteBet();
-
-        if (player.getPairPlusBet() == 0) {
-            if (remainingBalance - bet >= 5) {
-                pairPlusIncreaseButton.setDisable(false);
-            }
-        }
-        else {
-            if (remainingBalance - bet >= 1) {
-                pairPlusIncreaseButton.setDisable(false);
-            }
-        }
-    }
-
-
-    private void increasePairPlusBet(Player player, Label betDisplay, Button increaseButton, Button decreaseButton, Button confirmButton, Button anteIncreaseButton) {
-        int bet = player.getPairPlusBet();
-        int remainingBalance = player.getBalance() - bet;
-        int playBetRequirement = Math.max(player.getAnteBet() * 2, 10);
-
-        if (bet >= 25 || playBetRequirement > remainingBalance) {
-            increaseButton.setDisable(true);
-            return;
-        }
-        else if (bet == 24 || playBetRequirement == remainingBalance-1) {
-            player.setPairPlusBet(bet + 1);
-            increaseButton.setDisable(true);
-        }
-        else if (bet == 0) {
-            if (remainingBalance - 5 >= playBetRequirement) {
-                player.setPairPlusBet(bet + 5);
-                decreaseButton.setDisable(false);
-                if (remainingBalance - 5 == playBetRequirement) {
-                    increaseButton.setDisable(true);
-                }
-            }
-            else {
-                increaseButton.setDisable(true);
-            }
-        }
-        else if (remainingBalance - 1 >= playBetRequirement) {
-            player.setPairPlusBet(bet+1);
-            decreaseButton.setDisable(false);
-        }
-
-        bet = player.getPairPlusBet();
-        remainingBalance = player.getBalance() - bet;
-        if (remainingBalance < 2) {
-            anteIncreaseButton.setDisable(true);
-        }
-    }
-
-
-
-    private void decreasePairPlusBet(Player player, Label betDisplay, Button increaseButton, Button decreaseButton, Button confirmButton, Button anteIncreaseButton) {
-        int bet = player.getPairPlusBet();
-        int remainingBalance = player.getBalance() - player.getPairPlusBet();
-        int playBetRequirement = player.getAnteBet() * 2;
-
-        if (bet == 5) {
-            player.setPairPlusBet(bet-5);
-            decreaseButton.setDisable(true);
-            if (player.getAnteBet() < 25) {
-                anteIncreaseButton.setDisable(false);
-            }
-        }
-        else {
-            player.setPairPlusBet(bet-1);
-            decreaseButton.setDisable(false);
-            if (remainingBalance - 1 >= 2) {
-                anteIncreaseButton.setDisable(false);
-            }
-        }
-
-        if (remainingBalance + 1 >= playBetRequirement && bet < 25) {
-            increaseButton.setDisable(false);
-        }
     }
 
 
@@ -313,12 +183,42 @@ public class GameController implements Initializable {
     // if ante or pair plus bet == 0, increases by 5 (min $5 wager)
     // if ante or pair plus bet is >= 25, they are not updated (max $25 wager)
     // valid betType parameters: "ante", "pair plus", "play"
-    private void increaseBet(Player player, Label betDisplay, String betType, Button increaseButton, Button decreaseButton, Button confirmButton, Button pairPlusIncreaseButton, Button anteIncreaseButton) throws Exception {
+    private void increaseBet(Player player, Label betDisplay, String betType, Button increaseButton, Button decreaseButton, Button confirmButton) throws Exception {
         if(betType.equals("ante")) {
-            this.increaseAnteBet(player, betDisplay, increaseButton, decreaseButton, confirmButton, pairPlusIncreaseButton);
+            if (player.getAnteBet() >= 25) {
+                increaseButton.setDisable(true);
+                return;
+            }
+            else if (player.getAnteBet() == 24) {
+                player.setAnteBet(player.getAnteBet()+1);
+                increaseButton.setDisable(true);
+            }
+            else if (player.getAnteBet() == 0) {
+                player.setAnteBet(player.getAnteBet()+5);
+                confirmButton.setDisable(false);
+            }
+            else {
+                player.setAnteBet(player.getAnteBet()+1);
+                decreaseButton.setDisable(false);
+            }
         }
         else if (betType.equals("pair plus")) {
-            this.increasePairPlusBet(player, betDisplay, increaseButton, decreaseButton, confirmButton, anteIncreaseButton);
+            if (player.getPairPlusBet() >= 25) {
+                increaseButton.setDisable(true);
+                return;
+            }
+            else if (player.getPairPlusBet() == 24) {
+                player.setPairPlusBet(player.getPairPlusBet()+1);
+                increaseButton.setDisable(true);
+            }
+            else if (player.getPairPlusBet() == 0) {
+                player.setPairPlusBet(player.getPairPlusBet()+5);
+                decreaseButton.setDisable(false);
+            }
+            else {
+                player.setPairPlusBet(player.getPairPlusBet()+1);
+                decreaseButton.setDisable(false);
+            }
         }
         else if (betType.equals("play")) {
             player.setPlayBet(player.getAnteBet()); // play bet must be equal to ante bet
@@ -337,12 +237,28 @@ public class GameController implements Initializable {
     // if ante <= 5, it is not updated (min $5 wager)
     // if pair plus <= 0, it is not updated (no negative bets)
     // valid betType parameters: "ante", "pair plus"
-    private void decreaseBet(Player player, Label betDisplay, String betType, Button increaseButton, Button decreaseButton, Button pairPlusIncreaseButton, Button anteIncreaseButton) throws Exception {
+    private void decreaseBet(Player player, Label betDisplay, String betType, Button increaseButton, Button decreaseButton) throws Exception {
         if(betType.equals("ante")) {
-            decreaseAnteBet(player, betDisplay, increaseButton, decreaseButton, decreaseButton, pairPlusIncreaseButton);
+            if (player.getAnteBet() == 25) {
+                increaseButton.setDisable(false);
+            }
+            else if (player.getAnteBet() <= 6) {
+                decreaseButton.setDisable(true);
+            }
+            player.setAnteBet(player.getAnteBet()-1);
         }
         else if (betType.equals("pair plus")) {
-            decreasePairPlusBet(player, betDisplay, increaseButton, decreaseButton, decreaseButton, anteIncreaseButton);
+            if (player.getPairPlusBet() == 25) {
+                player.setPairPlusBet(player.getPairPlusBet()-1);
+                increaseButton.setDisable(false);
+            }
+            else if (player.getPairPlusBet() == 5) {
+                player.setPairPlusBet(player.getPairPlusBet()-5);
+                decreaseButton.setDisable(true);
+            }
+            else {
+                player.setPairPlusBet(player.getPairPlusBet()-1);
+            }
         }
         else {
             System.err.println("error decreasing bet amount'");
@@ -433,15 +349,13 @@ public class GameController implements Initializable {
 
 
     // confirms all bets and disables betting buttons for a single player
-    private void confirmBets(Player player, ArrayList<Button> betButtons, Label balanceLabel) {
+    private void confirmBets(Player player, ArrayList<Button> betButtons) {
+        // under minimum ante bet
+        if (player.getAnteBet() < 5) {
+            return;
+        }
+
         player.setHasConfirmed(true);
-
-        // NOTE: might add play bet later? i'm not 100% sure how i'll approach changing game state yet
-        int totalBet = player.getAnteBet() + player.getPairPlusBet();
-
-        // updates balance display below player's buttons
-        player.setBalance(player.getBalance()-totalBet);
-        this.refreshBalance(player, balanceLabel);
 
         for (int i = 0; i < betButtons.size(); i++) {
             betButtons.get(i).setDisable(true);
@@ -466,13 +380,6 @@ public class GameController implements Initializable {
     }
 
 
-    // refreshes the balance below the betting buttons for a single player
-    private void refreshBalance(Player player, Label playerBalance) {
-        playerBalance.setText("BALANCE: $" + player.getBalance());
-    }
-
-
-    // contains all event handlers to initialize the menu in the top left
     private void initializeMenu() {
         // event handler for the reset button found in the menu bar (top left)
         this.freshStartButton.setOnAction(event -> {
@@ -561,7 +468,7 @@ public class GameController implements Initializable {
         // ante bet
         this.player1IncreaseAnteBet.setOnAction(event -> {
             try {
-                this.increaseBet(this.player1, this.player1AnteBet, "ante", this.player1IncreaseAnteBet, this.player1DecreaseAnteBet, this.player1ConfirmBets, this.player1IncreasePairPlusBet, this.player1IncreaseAnteBet);
+                this.increaseBet(this.player1, this.player1AnteBet, "ante", this.player1IncreaseAnteBet, this.player1DecreaseAnteBet, this.player1ConfirmBets);
             }
             catch (Exception e) {
                 System.err.println("player 1 ante bet update error!");
@@ -569,7 +476,7 @@ public class GameController implements Initializable {
         });
         this.player1DecreaseAnteBet.setOnAction(event -> {
             try {
-                this.decreaseBet(this.player1, this.player1AnteBet, "ante", this.player1IncreaseAnteBet, this.player1DecreaseAnteBet, this.player1IncreasePairPlusBet, this.player1IncreaseAnteBet);
+                this.decreaseBet(this.player1, this.player1AnteBet, "ante", this.player1IncreaseAnteBet, this.player1DecreaseAnteBet);
             }
             catch (Exception e) {
                 System.err.println("player 1 ante bet update error!");
@@ -579,7 +486,7 @@ public class GameController implements Initializable {
         // pair plus bet
         this.player1IncreasePairPlusBet.setOnAction(event -> {
             try {
-                this.increaseBet(this.player1, this.player1PairPlusBet, "pair plus", this.player1IncreasePairPlusBet, this.player1DecreasePairPlusBet, this.player1ConfirmBets, this.player1IncreasePairPlusBet, this.player1IncreaseAnteBet);
+                this.increaseBet(this.player1, this.player1PairPlusBet, "pair plus", this.player1IncreasePairPlusBet, this.player1DecreasePairPlusBet, this.player1ConfirmBets);
             }
             catch (Exception e) {
                 System.err.println("player 1 pair plus bet update error!");
@@ -587,7 +494,7 @@ public class GameController implements Initializable {
         });
         this.player1DecreasePairPlusBet.setOnAction(event -> {
             try {
-                this.decreaseBet(this.player1, this.player1PairPlusBet, "pair plus", this.player1IncreasePairPlusBet, this.player1DecreasePairPlusBet, this.player1IncreasePairPlusBet, this.player1IncreaseAnteBet);
+                this.decreaseBet(this.player1, this.player1PairPlusBet, "pair plus", this.player1IncreasePairPlusBet, this.player1DecreasePairPlusBet);
             }
             catch (Exception e) {
                 System.err.println("player 1 pair plus bet update error!");
@@ -597,7 +504,7 @@ public class GameController implements Initializable {
         // play bet
         this.player1IncreasePlayBet.setOnAction(event -> {
             try {
-                this.increaseBet(this.player1, this.player1PlayBet, "play", this.player1IncreasePlayBet, null, this.player1ConfirmBets, this.player1IncreasePairPlusBet, this.player1IncreaseAnteBet);
+                this.increaseBet(this.player1, this.player1PlayBet, "play", this.player1IncreasePlayBet, null, this.player1ConfirmBets);
             }
             catch (Exception e) {
                 System.err.println("player 1 play bet update error!");
@@ -607,7 +514,7 @@ public class GameController implements Initializable {
         // confirm bets
         this.player1ConfirmBets.setOnAction(event -> {
             try {
-                this.confirmBets(this.player1, this.player1BetButtons, this.player1Balance);
+                this.confirmBets(this.player1, this.player1BetButtons);
             }
             catch (Exception e) {
                 System.err.println("player 1 confirm bets error!");
@@ -673,7 +580,7 @@ public class GameController implements Initializable {
         // ante bet
         this.player2IncreaseAnteBet.setOnAction(event -> {
             try {
-                this.increaseBet(this.player2, this.player2AnteBet, "ante", this.player2IncreaseAnteBet, this.player2DecreaseAnteBet, this.player2ConfirmBets, this.player2IncreasePairPlusBet, this.player2IncreaseAnteBet);
+                this.increaseBet(this.player2, this.player2AnteBet, "ante", this.player2IncreaseAnteBet, this.player2DecreaseAnteBet, this.player2ConfirmBets);
             }
             catch (Exception e) {
                 System.err.println("player 2 ante bet update error!");
@@ -681,7 +588,7 @@ public class GameController implements Initializable {
         });
         this.player2DecreaseAnteBet.setOnAction(event -> {
             try {
-                this.decreaseBet(this.player2, this.player2AnteBet, "ante", this.player2IncreaseAnteBet, this.player2DecreaseAnteBet, this.player2IncreasePairPlusBet, this.player2IncreaseAnteBet);
+                this.decreaseBet(this.player2, this.player2AnteBet, "ante", this.player2IncreaseAnteBet, this.player2DecreaseAnteBet);
             }
             catch (Exception e) {
                 System.err.println("player 2 ante bet update error!");
@@ -691,7 +598,7 @@ public class GameController implements Initializable {
         // pair plus bet
         this.player2IncreasePairPlusBet.setOnAction(event -> {
             try {
-                this.increaseBet(this.player2, this.player2PairPlusBet, "pair plus", this.player2IncreasePairPlusBet, this.player2DecreasePairPlusBet, this.player2ConfirmBets, this.player2IncreasePairPlusBet, this.player2IncreaseAnteBet);
+                this.increaseBet(this.player2, this.player2PairPlusBet, "pair plus", this.player2IncreasePairPlusBet, this.player2DecreasePairPlusBet, this.player2ConfirmBets);
             }
             catch (Exception e) {
                 System.err.println("player 2 pair plus bet update error!");
@@ -699,7 +606,7 @@ public class GameController implements Initializable {
         });
         this.player2DecreasePairPlusBet.setOnAction(event -> {
             try {
-                this.decreaseBet(this.player2, this.player2PairPlusBet, "pair plus", this.player2IncreasePairPlusBet, this.player2DecreasePairPlusBet, this.player2IncreasePairPlusBet, this.player2IncreaseAnteBet);
+                this.decreaseBet(this.player2, this.player2PairPlusBet, "pair plus", this.player2IncreasePairPlusBet, this.player2DecreasePairPlusBet);
             }
             catch (Exception e) {
                 System.err.println("player 2 pair plus bet update error!");
@@ -709,7 +616,7 @@ public class GameController implements Initializable {
         // play bet
         this.player2IncreasePlayBet.setOnAction(event -> {
             try {
-                this.increaseBet(this.player2, this.player2PlayBet, "play", this.player2IncreasePlayBet, null, this.player2ConfirmBets, this.player2IncreasePairPlusBet, this.player2IncreaseAnteBet);
+                this.increaseBet(this.player2, this.player2PlayBet, "play", this.player2IncreasePlayBet, null, this.player2ConfirmBets);
             }
             catch (Exception e) {
                 System.err.println("player 2 play bet update error!");
@@ -719,7 +626,7 @@ public class GameController implements Initializable {
         // confirm bets
         this.player2ConfirmBets.setOnAction(event -> {
             try {
-                this.confirmBets(this.player2, this.player2BetButtons, this.player2Balance);
+                this.confirmBets(this.player2, this.player2BetButtons);
             }
             catch (Exception e) {
                 System.err.println("player 2 confirm bets error!");

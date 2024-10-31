@@ -3,14 +3,14 @@ import java.util.ArrayList;
 public class Player {
 
     // data members
+    // required
     private ArrayList<Card> hand;
     private int anteBet;
     private int playBet;
     private int pairPlusBet;
     private int totalWinnings;
 
-    private int balance;
-
+    // optional
     private boolean hasConfirmed;
     private boolean hasFolded;
 
@@ -19,20 +19,10 @@ public class Player {
     public Player() {
         // TODO: implement
         this.setHand(null);
-
-        // set bets to 0
         this.setAnteBet(0);
         this.setPlayBet(0);
         this.setPairPlusBet(0);
-
-        // set winnings and balance to default values
-        // winnings: 0
-        // balance: 25
         this.setTotalWinnings(0);
-        this.setBalance(25);
-
-        // set game control booleans
-        this.setHasConfirmed(false);
         this.setHasFolded(false);
     }
 
@@ -77,14 +67,6 @@ public class Player {
     }
     public void setTotalWinnings(int totalWinnings) {
         this.totalWinnings = totalWinnings;
-    }
-
-    // balance
-    public int getBalance() {
-        return this.balance;
-    }
-    public void setBalance(int balance) {
-        this.balance = balance;
     }
 
     // hasConfirmed
