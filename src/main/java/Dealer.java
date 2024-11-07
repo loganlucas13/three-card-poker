@@ -21,14 +21,19 @@ public class Dealer {
     // if not, deck is reshuffled
     public ArrayList<Card> dealHand() {
     	if(getDeck().size() <= 34) {
-    		this.getDeck().newDeck(); //reshuffle with new deck if amount of cards <= 34
+    		this.getDeck().newDeck(); // reshuffle with new deck if amount of cards <= 34
     	}
-    	//adds three cards to the hand
-    	//removes top card 3 times
-    	this.dealersHand.add(this.theDeck.remove(0));
-    	this.dealersHand.add(this.theDeck.remove(0));
-    	this.dealersHand.add(this.theDeck.remove(0));
-        return dealersHand;
+
+        // create new hand to return
+        ArrayList<Card> newHand = new ArrayList<Card>(3);
+
+        // adds three cards to the hand
+    	// removes top card 3 times
+    	newHand.add(this.theDeck.remove(0));
+    	newHand.add(this.theDeck.remove(0));
+    	newHand.add(this.theDeck.remove(0));
+
+        return newHand;
     }
 
 

@@ -68,17 +68,17 @@ public class ThreeCardLogic {
     // if the player loses, return 0
     public static int evalPPWinnings(ArrayList<Card> hand, int bet) {
         switch (evalHand(hand)) {
-            case 5:
+            case 5: // pair
                 return bet;
-            case 4:
+            case 4: // flush
                 return bet * 3;
-            case 3:
+            case 3: // straight
                 return bet * 6;
-            case 2:
+            case 2: // three of a kind
                 return bet * 30;
-            case 1:
+            case 1: // straight flush
                 return bet * 40;
-            default:
+            default: // loss
                 return 0;
         }
     }
