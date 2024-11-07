@@ -19,7 +19,7 @@ public class Player {
     public Player() {
         // TODO: implement
         this.setHand(null);
-        this.setAnteBet(0); //default start is $5
+        this.setAnteBet(5); // default start is $5
         this.setPlayBet(0);
         this.setPairPlusBet(0);
         this.setTotalWinnings(0);

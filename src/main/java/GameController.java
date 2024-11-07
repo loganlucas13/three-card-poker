@@ -193,10 +193,6 @@ public class GameController implements Initializable {
                 player.setAnteBet(player.getAnteBet()+1);
                 increaseButton.setDisable(true);
             }
-            else if (player.getAnteBet() == 0) {
-                player.setAnteBet(player.getAnteBet()+5);
-                confirmButton.setDisable(false);
-            }
             else {
                 player.setAnteBet(player.getAnteBet()+1);
                 decreaseButton.setDisable(false);
@@ -449,8 +445,7 @@ public class GameController implements Initializable {
         this.player1DecreaseAnteBet.setDisable(true);
         this.player1DecreasePairPlusBet.setDisable(true);
 
-        // can't confirm bet or fold at the very start
-        this.player1ConfirmBets.setDisable(true);
+        // can't fold at the very start
         this.player1Fold.setDisable(true);
 
         // updates bet display
@@ -561,8 +556,7 @@ public class GameController implements Initializable {
         this.player2DecreaseAnteBet.setDisable(true);
         this.player2DecreasePairPlusBet.setDisable(true);
 
-        // can't confirm bet or fold at the very start
-        this.player2ConfirmBets.setDisable(true);
+        // can't fold at the very start
         this.player2Fold.setDisable(true);
 
         // updates bet display
