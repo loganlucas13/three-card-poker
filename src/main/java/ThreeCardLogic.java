@@ -19,7 +19,7 @@ public class ThreeCardLogic {
     	int res = 0; //return this value
     	int valueCount = 1; //counts how many number repeats there are
     	int suitCount = 1; //counts how many suit repeats there are
-    	
+
     	//go through each card in the hand
         for(Card card : hand) {
         	int value = card.getValue();
@@ -33,9 +33,9 @@ public class ThreeCardLogic {
         	//this is for the straight hand
         	sortedV.add(value);
         }
-        
+
         int straightFlush = 0; //this integer verifies if it's a straight flush. 2 = true. 1, 0 = false.
-        
+
         //if there's a pair, result is now a pair
         if(valueCount == 2) res = 5;
 
@@ -44,7 +44,7 @@ public class ThreeCardLogic {
         	res = 4;
         	straightFlush += 1;
         }
-        
+
         //sort sortedV, then looks at the other 2 cards
         //to make sure if it's +1 and +2 of the beginning card's value
         //if there's a straight, result is now a straight and straightFlush is 1/2 complete
@@ -53,13 +53,13 @@ public class ThreeCardLogic {
         	res = 3;
         	straightFlush += 1;
         }
-        
+
         //if there is a three of a kind, result is now a three of a kind
         if(valueCount == 3) res = 2;
-        
+
         //checks if straightFlush is 2 from length == 3 and suitCount ==3, result becomes a Straight Flush
         if(straightFlush == 2) res = 1;
-        
+
         return res;
     }
 
@@ -67,12 +67,20 @@ public class ThreeCardLogic {
     // returns the amount won for the PairPlus bet
     // if the player loses, return 0
     public static int evalPPWinnings(ArrayList<Card> hand, int bet) {
-    	if(evalHand(hand) == 5) return bet;
-    	else if(evalHand(hand) == 4) return bet * 3;
-    	else if(evalHand(hand) == 3) return bet * 6;
-    	else if(evalHand(hand) == 2) return bet * 30;
-    	else if(evalHand(hand) == 1) return bet * 40;
-        return 0;
+        switch (evalHand(hand)) {
+            case 5:
+                return bet;
+            case 4:
+                return bet * 3;
+            case 3:
+                return bet * 6;
+            case 2:
+                return bet * 30;
+            case 1:
+                return bet * 40;
+            default:
+                return 0;
+        }
     }
 
     // compare the hands passed in an returns an integer based on result
@@ -92,7 +100,7 @@ public class ThreeCardLogic {
         	if(evalD == 0) return 2;
         	else return 1;
         }
-        
+
         //get all values of the two hands
         ArrayList<Integer> dealerV = new ArrayList<>();
         ArrayList<Integer> playerV = new ArrayList<>();
@@ -104,11 +112,11 @@ public class ThreeCardLogic {
         	int value = card.getValue();
         	playerV.add(value);
         }
-        
+
         //sort the values
 	    Collections.sort(dealerV);
 	    Collections.sort(playerV);
-	    
+
 	    //if the hands are a straight flush, a straight, or a flush, check each card's value to determine the winning hand
         if((evalD == 1 && evalP == 1) || (evalD == 3 && evalP == 3) || (evalD == 4 && evalP == 4)) {
         	for(int i = 0; i < dealerV.size(); i++) {
@@ -121,14 +129,14 @@ public class ThreeCardLogic {
         	}
         	return 0;
         }
-        
+
         //if the hands are a three of a kind, you only need to check the highest value card for each hand
         else if(evalD == 2 && evalP == 2) {
         	if(dealerV.get(0) > playerV.get(0)) return 1;
         	else if(dealerV.get(0) < playerV.get(0)) return 2;
         	return 0;
         }
-        
+
         //separate dealer hand into pair values and the kicker value
         int dealerPair = 0;
         int dealerKicker = 0;
@@ -147,7 +155,7 @@ public class ThreeCardLogic {
         	if(playerPair != value && playerPair != 0) playerKicker = value;
         	if(playerPair == 0) playerPair = value;
         }
-        
+
         //checks if the pair is greater for one hand
         if(playerPair > dealerPair) return 2;
         else if(playerPair < dealerPair) return 1;

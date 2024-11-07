@@ -17,7 +17,6 @@ public class Player {
 
     // constructor
     public Player() {
-        // TODO: implement
         this.setHand(null);
         this.setAnteBet(5); // default start is $5
         this.setPlayBet(0);
