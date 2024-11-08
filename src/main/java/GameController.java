@@ -523,6 +523,7 @@ public class GameController implements Initializable {
     }
 
 
+    // initializes the menu in the top left of the screen
     private void initializeMenu() {
         // event handler for the reset button found in the menu bar (top left)
         this.freshStartButton.setOnAction(event -> {
@@ -534,6 +535,7 @@ public class GameController implements Initializable {
             }
         });
 
+        // event handler for the new look button found in the menu bar (top left)
         this.newLookButton.setOnAction(event -> {
             try {
                 this.updateAppearance();
