@@ -161,7 +161,16 @@ public class GameController implements Initializable {
 
         this.cardBackFileName = filenames.get(randomIndex);
 
-        this.setAllCardImages();
+        if (!(this.player1.getHasConfirmed() && this.player2.getHasConfirmed())) {
+            // if both players have not confirmed, update card image to the backing (cards haven't been flipped yet)
+            this.setAllCardImages();
+        }
+        else if (!this.dealer.getHasFlipped()) {
+            // if the dealer has not flipped their cards, update the backing of the cards
+            for (ImageView card : this.dealerCards) {
+                this.setCardImage(card, this.cardBackFileName);
+            }
+        }
     }
 
 
@@ -512,7 +521,9 @@ public class GameController implements Initializable {
         if (player2.getPlayBet() != 0 || player2.getHasFolded()) {
             player2Done = true;
         }
-        return player1Done && player2Done;
+        this.dealer.setHasFlipped(player1Done && player2Done);
+
+        return this.dealer.getHasFlipped();
     }
 
 
