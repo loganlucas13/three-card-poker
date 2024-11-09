@@ -53,6 +53,11 @@ public class ThreeCardLogic {
         	res = 3;
         	straightFlush += 1;
         }
+        //edge case where ACE is in the straight, so A23 or QKA works
+        else if(sortedV.get(2) == 14 && sortedV.get(2) == sortedV.get(1) + 11 && sortedV.get(2) == sortedV.get(0) + 12) {
+        	res = 3;
+        	straightFlush += 1;
+        }
 
         //if there is a three of a kind, result is now a three of a kind
         if(valueCount == 3) res = 2;
@@ -119,7 +124,7 @@ public class ThreeCardLogic {
 
 	    //if the hands are a straight flush, a straight, or a flush, check each card's value to determine the winning hand
         if((evalD == 1 && evalP == 1) || (evalD == 3 && evalP == 3) || (evalD == 4 && evalP == 4)) {
-        	for(int i = dealerV.size() - 1; i >= 0; i++) {
+        	for(int i = dealerV.size() - 1; i >= 0; i--) {
         		if(dealerV.get(i) > playerV.get(i)) {
         			return 1;
         		}
