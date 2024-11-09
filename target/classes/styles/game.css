@@ -73,7 +73,10 @@
     -fx-border-width: 5px;
 }
 
-/* next two classes change color of winnings text based on how much money the player has won */
+/* next three classes change color of winnings text based on how much money the player has won */
+.winningsText.zero {
+    -fx-text-fill: #000000;
+}
 .winningsText.positive {
     -fx-text-fill: #375018;
 }

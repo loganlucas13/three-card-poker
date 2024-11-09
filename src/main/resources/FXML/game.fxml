@@ -27,11 +27,11 @@
             <VBox alignment="TOP_RIGHT">
                 <HBox styleClass="textBox" alignment="TOP_RIGHT" spacing="5">
                     <Label text="PLAYER 1 WINNINGS:" minWidth="200"></Label>
-                    <Label fx:id="player1Winnings" styleClass="winningsText" text="placeholder"></Label>
+                    <Label fx:id="player1Winnings" styleClass="winningsText" text="placeholder" minWidth="75"></Label>
                 </HBox>
                 <HBox styleClass="textBox" alignment="TOP_RIGHT" spacing="5">
                     <Label text="PLAYER 2 WINNINGS:" minWidth="200"></Label>
-                    <Label fx:id="player2Winnings" styleClass="winningsText" text="placeholder"></Label>
+                    <Label fx:id="player2Winnings" styleClass="winningsText" text="placeholder" minWidth="75"></Label>
                 </HBox>
             </VBox>
         </HBox>

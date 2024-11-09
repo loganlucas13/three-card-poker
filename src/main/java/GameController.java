@@ -186,33 +186,33 @@ public class GameController implements Initializable {
         this.dealer = new Dealer();
 
         this.initializeDealer();
-        
+
         int ante1 = this.player1.getAnteBet();
         int ante2 = this.player2.getAnteBet();
         boolean keep1 = this.player1.getKeepAnte();
         boolean keep2 = this.player1.getKeepAnte();
         int remember1 = this.player1.getTotalWinnings();
         int remember2 = this.player2.getTotalWinnings();
-        
+
         this.player1 = new Player();
         this.player2 = new Player();
 
         this.initializePlayer1();
         this.initializePlayer2();
-        if(keep1 == true) {
-        	System.out.println(ante1);
+
+        if (keep1) {
         	this.player1.setAnteBet(ante1);
         	this.updateBetAmount(player1, player1AnteBet, "ante");
             this.player1IncreaseAnteBet.setDisable(true);
             this.player1DecreaseAnteBet.setDisable(true);
         }
-        if(keep2 == true) {
+        if (keep2) {
         	this.player2.setAnteBet(ante2);
         	this.updateBetAmount(player2, player2AnteBet, "ante");
             this.player2IncreaseAnteBet.setDisable(true);
             this.player2DecreaseAnteBet.setDisable(true);
         }
-        
+
         // winnings boxes in the top right
         if (willResetWinnings) {
             this.initializeWinnings(player1, player1Winnings);
@@ -223,6 +223,7 @@ public class GameController implements Initializable {
         	this.player2.setTotalWinnings(remember2);
         }
     }
+
 
     // overloaded
     // resets game
@@ -235,7 +236,7 @@ public class GameController implements Initializable {
 
         int remember1 = this.player1.getTotalWinnings();
         int remember2 = this.player2.getTotalWinnings();
-        
+
         this.player1 = new Player();
         this.player2 = new Player();
 
@@ -252,6 +253,7 @@ public class GameController implements Initializable {
         	this.player2.setTotalWinnings(remember2);
         }
     }
+
 
     // event handler for all increase bet buttons
     // increases ante and pair plus bets by 1 OR sets play bet equal to ante bet
@@ -345,13 +347,16 @@ public class GameController implements Initializable {
     // 0 - black (default)
     private void changeWinningsTextColor(Player player, Label playerWinnings) {
         if (player.getTotalWinnings() > 0) {
+            playerWinnings.getStyleClass().removeAll("negative", "zero");
             playerWinnings.getStyleClass().add("positive");
         }
         else if (player.getTotalWinnings() < 0) {
+            playerWinnings.getStyleClass().removeAll("positive", "zero");
             playerWinnings.getStyleClass().add("negative");
         }
         else {
-            playerWinnings.getStyleClass().removeAll(); // sets text to black
+            playerWinnings.getStyleClass().removeAll("positive", "negative");
+            playerWinnings.getStyleClass().add("zero");
         }
     }
 
@@ -472,7 +477,7 @@ public class GameController implements Initializable {
     	catch (Exception e) {
     		System.err.println(e.getMessage());
     	}
-    	
+
     	//checks to see if the dealer is qualified by checking if their hand is at least a Queen high
     	int dealerValue = ThreeCardLogic.evalHand(this.dealer.getDealersHand());
     	boolean dealerQual = true; //automatically qualified
@@ -490,23 +495,21 @@ public class GameController implements Initializable {
             	dealerQual = false;
             }
     	}
-    	
+
     	//figures out the evaluation of the cards and the winnings
     	boolean keepAnte1 = false;
     	boolean keepAnte2 = false;
     	evaluateTheWinnings(dealerQual);
-    	
+
     	//update scoreboard
     	initializeWinnings(player1, player1Winnings);
     	initializeWinnings(player2, player2Winnings);
-    	
+
     	PauseTransition pause = new PauseTransition(Duration.seconds(7));
     	pause.setOnFinished(event -> startAgain(keepAnte1, keepAnte2));
     	pause.play();
-    	    	
-        System.out.println("game should complete!");
     }
-    
+
     //used for completeGame()
     //compares and evaluates the cards and the winnings/losses for the players
     private void evaluateTheWinnings(boolean dealerQual) {
@@ -515,7 +518,7 @@ public class GameController implements Initializable {
     	int player2Win = ThreeCardLogic.CompareHands(this.dealer.getDealersHand(), this.player2.getHand());
     	int player1PP = ThreeCardLogic.evalPPWinnings(this.player1.getHand(), this.player1.getPairPlusBet());
 		int player2PP = ThreeCardLogic.evalPPWinnings(this.player2.getHand(), this.player2.getPairPlusBet());
-    	
+
     	//2 = player wins money, 1 = dealer takes the money, 0 = nothing, you get money returned
 		//for 2, it adds the antebet winnings, and gives the evaluated pair plus winnings (or loss)
 		//for player 1
@@ -548,7 +551,7 @@ public class GameController implements Initializable {
 			this.player2.setTotalWinnings(this.player2.getTotalWinnings() - this.player2.getPairPlusBet() - this.player2.getAnteBet());
 		}
     }
-    
+
     private void startAgain(boolean keepAnte1, boolean keepAnte2) {
     	try {
             this.resetGame(false, 1);
