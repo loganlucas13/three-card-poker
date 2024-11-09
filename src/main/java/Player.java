@@ -13,7 +13,7 @@ public class Player {
     // optional
     private boolean hasConfirmed;
     private boolean hasFolded;
-
+    private boolean keepAnte;
 
     // constructor
     public Player() {
@@ -23,6 +23,7 @@ public class Player {
         this.setPairPlusBet(0);
         this.setTotalWinnings(0);
         this.setHasFolded(false);
+        this.setKeepAnte(false);
     }
 
 
@@ -82,5 +83,13 @@ public class Player {
     }
     public void setHasFolded(boolean hasFolded) {
         this.hasFolded = hasFolded;
+    }
+    
+    // keepAnte
+    public boolean getKeepAnte() {
+    	return this.keepAnte;
+    }
+    public void setKeepAnte(boolean keepAnte) {
+    	this.keepAnte = keepAnte;
     }
 }
