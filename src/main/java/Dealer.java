@@ -16,6 +16,27 @@ public class Dealer {
         this.theDeck = new Deck();
     }
 
+    // returns the hand type as a string
+    // (for printing out popup text)
+    public String handToString() {
+        switch (ThreeCardLogic.evalHand(this.getDealersHand())) {
+            case 0:
+                return "HIGH CARD";
+            case 1:
+                return "STRAIGHT FLUSH";
+            case 2:
+                return "THREE OF A KIND";
+            case 3:
+                return "STRAIGHT";
+            case 4:
+                return "FLUSH";
+            case 5:
+                return "PAIR";
+            default:
+                return "INVALID HAND TYPE";
+        }
+    }
+
     // returns an ArrayList of 3 cards removed from this.theDeck
     // checks if there are more than 34 cards left in this.theDeck
     // if not, deck is reshuffled

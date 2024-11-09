@@ -7,11 +7,14 @@ import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.VBox;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -19,6 +22,8 @@ import javafx.scene.control.Label;
 import javafx.scene.effect.ColorAdjust;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.paint.Color;
+import javafx.stage.Popup;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 
 public class GameController implements Initializable {
@@ -35,6 +40,18 @@ public class GameController implements Initializable {
     private Label player1Winnings;
     @FXML
     private Label player2Winnings;
+
+    @FXML
+    private Label player1HandType;
+    @FXML
+    private Label player2HandType;
+    @FXML
+    private Label dealerHandType;
+
+    @FXML
+    private VBox player1ButtonBox;
+    @FXML
+    private VBox player2ButtonBox;
 
     @FXML
     private Label player1AnteBet;
@@ -200,6 +217,10 @@ public class GameController implements Initializable {
         this.initializePlayer1();
         this.initializePlayer2();
 
+        this.dealerHandType.setText("HAND TYPE: ???");
+        this.player1HandType.setText("HAND TYPE: ???");
+        this.player2HandType.setText("HAND TYPE: ???");
+
         if (keep1) {
         	this.player1.setAnteBet(ante1);
         	this.updateBetAmount(player1, player1AnteBet, "ante");
@@ -242,6 +263,10 @@ public class GameController implements Initializable {
 
         this.initializePlayer1();
         this.initializePlayer2();
+
+        this.dealerHandType.setText("HAND TYPE: ???");
+        this.player1HandType.setText("HAND TYPE: ???");
+        this.player2HandType.setText("HAND TYPE: ???");
 
         // winnings boxes in the top right
         if (willResetWinnings) {
@@ -460,6 +485,10 @@ public class GameController implements Initializable {
             // flip player cards
             this.flipCards(null, this.player1, this.player1Cards);
             this.flipCards(null, this.player2, this.player2Cards);
+
+            // update hand labels found above the card display
+            this.player1HandType.setText("HAND TYPE: " + this.player1.handToString());
+            this.player2HandType.setText("HAND TYPE: " + this.player2.handToString());
         }
         catch (Exception e) {
             System.err.println(e.getMessage());
@@ -473,6 +502,8 @@ public class GameController implements Initializable {
     	try {
     		//flip dealer cards
     		this.flipCards(this.dealer, null, this.dealerCards);
+            this.dealerHandType.setText("HAND TYPE: " + this.dealer.handToString());
+
     	}
     	catch (Exception e) {
     		System.err.println(e.getMessage());
@@ -497,21 +528,18 @@ public class GameController implements Initializable {
     	}
 
     	//figures out the evaluation of the cards and the winnings
-    	boolean keepAnte1 = false;
-    	boolean keepAnte2 = false;
-    	evaluateTheWinnings(dealerQual);
+    	this.evaluateTheWinnings(dealerQual);
 
     	//update scoreboard
-    	initializeWinnings(player1, player1Winnings);
-    	initializeWinnings(player2, player2Winnings);
+    	this.initializeWinnings(player1, player1Winnings);
+    	this.initializeWinnings(player2, player2Winnings);
 
-    	PauseTransition pause = new PauseTransition(Duration.seconds(7));
-    	pause.setOnFinished(event -> startAgain(keepAnte1, keepAnte2));
-    	pause.play();
+        this.displayWinningPopup();
     }
 
-    //used for completeGame()
-    //compares and evaluates the cards and the winnings/losses for the players
+
+    // used for completeGame()
+    // compares and evaluates the cards and the winnings/losses for the players
     private void evaluateTheWinnings(boolean dealerQual) {
     	//finds details on the cards so that they'll get compared and evaluated
     	int player1Win = ThreeCardLogic.CompareHands(this.dealer.getDealersHand(), this.player1.getHand());
@@ -552,13 +580,57 @@ public class GameController implements Initializable {
 		}
     }
 
-    private void startAgain(boolean keepAnte1, boolean keepAnte2) {
+
+    // restarts the game using the non-overloaded resetGame function (adding in main)
+    private void startAgain() {
     	try {
             this.resetGame(false, 1);
         }
         catch (Exception e) {
             System.err.println("resetGame() error!");
         }
+    }
+
+
+    // displays popups that show up after the game has ended
+    private void displayWinningPopup() {
+        // based off of the controls for each player
+        Stage stage1 = (Stage)this.player1ButtonBox.getScene().getWindow();
+        Stage stage2 = (Stage)this.player2ButtonBox.getScene().getWindow();
+
+        Popup player1Popup = this.createPopup(this.player1, stage1);
+        Popup player2Popup = this.createPopup(this.player2, stage2);
+
+        // to align the popup with the betting buttons
+        Bounds player1Bounds = this.player1ButtonBox.localToScene(this.player1ButtonBox.getBoundsInLocal());
+        Bounds player2Bounds = this.player2ButtonBox.localToScene(this.player2ButtonBox.getBoundsInLocal());
+
+        player1Popup.show(stage1, player1Bounds.getCenterX()-25, player1Bounds.getCenterY()-30);
+        player2Popup.show(stage2, player2Bounds.getCenterX()-25, player2Bounds.getCenterY()-30);
+
+        // pauses the game to allow the player to read popup text
+        PauseTransition pause = new PauseTransition(Duration.seconds(7));
+
+    	pause.setOnFinished(event -> {
+            player1Popup.hide();
+            player2Popup.hide();
+            startAgain();
+        });
+    	pause.play();
+    }
+
+
+    // constructs a popup with the desired text and returns it
+    // mainly used as a helper function for this.displayWinningPopup()
+    private Popup createPopup(Player player, Stage stage) {
+        Popup popup = new Popup();
+
+        Label popupLabel = new Label(player.resultToString(this.dealer));
+        popupLabel.getStylesheets().add(getClass().getResource("styles/popup.css").toExternalForm());
+
+        popup.getContent().add(popupLabel);
+
+        return popup;
     }
 
 

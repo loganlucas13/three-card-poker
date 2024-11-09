@@ -27,6 +27,82 @@ public class Player {
     }
 
 
+    // returns the hand type as a string
+    // (for printing out popup text)
+    public String handToString() {
+        switch (ThreeCardLogic.evalHand(this.getHand())) {
+            case 0:
+                return "HIGH CARD";
+            case 1:
+                return "STRAIGHT FLUSH";
+            case 2:
+                return "THREE OF A KIND";
+            case 3:
+                return "STRAIGHT";
+            case 4:
+                return "FLUSH";
+            case 5:
+                return "PAIR";
+            default:
+                return "INVALID HAND TYPE";
+        }
+    }
+
+
+    // returns the result of the player's wagers as a string
+    // checks against the dealer's hand using ThreeCardLogic.CompareHands
+    public String resultToString(Dealer dealer) {
+        String result = "";
+        // if the player has folded, results are not printed
+        if (this.hasFolded) {
+            result += "PLAYER HAS FOLDED\n\nALL BETS LOST";
+            return result;
+        }
+
+        result += "ANTE BET ";
+        switch (ThreeCardLogic.CompareHands(dealer.getDealersHand(), this.getHand())) {
+            case 0:
+                result += "TIE";
+                break;
+            case 1:
+                result += "LOSS";
+                break;
+            case 2:
+                result += "WIN";
+                break;
+        }
+
+        if (this.getPairPlusBet() == 0) {
+            result += "\n\nDID NOT PLACE PAIR PLUS BET";
+            return result;
+        }
+
+        result += "\n\nPAIR PLUS RESULT: ";
+
+
+        int pairPlusWinnings = ThreeCardLogic.evalPPWinnings(this.getHand(), this.getPairPlusBet());
+        if (this.getPairPlusBet() == pairPlusWinnings) {
+            result += "1 TO 1";
+        }
+        else if (this.getPairPlusBet() * 3 == pairPlusWinnings) {
+            result += "3 TO 1";
+        }
+        else if (this.getPairPlusBet() * 6 == pairPlusWinnings) {
+            result += "6 TO 1";
+        }
+        else if (this.getPairPlusBet() * 30 == pairPlusWinnings) {
+            result += "30 TO 1";
+        }
+        else if (this.getPairPlusBet() * 40 == pairPlusWinnings) {
+            result += "40 TO 1";
+        }
+        else {
+            result += "LOSS";
+        }
+        return result;
+    }
+
+
     // getters and setters
 
     // hand
@@ -84,7 +160,7 @@ public class Player {
     public void setHasFolded(boolean hasFolded) {
         this.hasFolded = hasFolded;
     }
-    
+
     // keepAnte
     public boolean getKeepAnte() {
     	return this.keepAnte;

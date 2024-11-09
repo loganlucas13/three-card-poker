@@ -84,7 +84,7 @@ public class ThreeCardLogic {
             case 1: // straight flush
                 return bet * 40;
             default: // loss
-                return bet * -1;
+                return 0; // could return bet * -1, but returns since no amount was won
         }
     }
 
