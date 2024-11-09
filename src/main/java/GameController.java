@@ -1,7 +1,9 @@
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.ResourceBundle;
 
+import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -17,6 +19,7 @@ import javafx.scene.control.Label;
 import javafx.scene.effect.ColorAdjust;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.paint.Color;
+import javafx.util.Duration;
 
 public class GameController implements Initializable {
 
@@ -177,11 +180,62 @@ public class GameController implements Initializable {
     // resets game
     // can be used to either reset the game completely or move onto the next round
     // 'willResetWinnings' should be false when continuing the game, true otherwise
+    // keepAnte1 and keepAnte2 determine if they'll be kept because of dealer's qualification
+    // main variable kind of just exists for this method to be used after game ends
+    private void resetGame(boolean willResetWinnings, int main) throws Exception {
+        this.dealer = new Dealer();
+
+        this.initializeDealer();
+        
+        int ante1 = this.player1.getAnteBet();
+        int ante2 = this.player2.getAnteBet();
+        boolean keep1 = this.player1.getKeepAnte();
+        boolean keep2 = this.player1.getKeepAnte();
+        int remember1 = this.player1.getTotalWinnings();
+        int remember2 = this.player2.getTotalWinnings();
+        
+        this.player1 = new Player();
+        this.player2 = new Player();
+
+        this.initializePlayer1();
+        this.initializePlayer2();
+        if(keep1 == true) {
+        	System.out.println(ante1);
+        	this.player1.setAnteBet(ante1);
+        	this.updateBetAmount(player1, player1AnteBet, "ante");
+            this.player1IncreaseAnteBet.setDisable(true);
+            this.player1DecreaseAnteBet.setDisable(true);
+        }
+        if(keep2 == true) {
+        	this.player2.setAnteBet(ante2);
+        	this.updateBetAmount(player2, player2AnteBet, "ante");
+            this.player2IncreaseAnteBet.setDisable(true);
+            this.player2DecreaseAnteBet.setDisable(true);
+        }
+        
+        // winnings boxes in the top right
+        if (willResetWinnings) {
+            this.initializeWinnings(player1, player1Winnings);
+            this.initializeWinnings(player2, player2Winnings);
+        }
+        else {
+        	this.player1.setTotalWinnings(remember1);
+        	this.player2.setTotalWinnings(remember2);
+        }
+    }
+
+    // overloaded
+    // resets game
+    // can be used to either reset the game completely or move onto the next round
+    // 'willResetWinnings' should be false when continuing the game, true otherwise
     private void resetGame(boolean willResetWinnings) throws Exception {
         this.dealer = new Dealer();
 
         this.initializeDealer();
 
+        int remember1 = this.player1.getTotalWinnings();
+        int remember2 = this.player2.getTotalWinnings();
+        
         this.player1 = new Player();
         this.player2 = new Player();
 
@@ -193,8 +247,11 @@ public class GameController implements Initializable {
             this.initializeWinnings(player1, player1Winnings);
             this.initializeWinnings(player2, player2Winnings);
         }
+        else {
+        	this.player1.setTotalWinnings(remember1);
+        	this.player2.setTotalWinnings(remember2);
+        }
     }
-
 
     // event handler for all increase bet buttons
     // increases ante and pair plus bets by 1 OR sets play bet equal to ante bet
@@ -416,57 +473,85 @@ public class GameController implements Initializable {
     		System.err.println(e.getMessage());
     	}
     	
+    	//checks to see if the dealer is qualified by checking if their hand is at least a Queen high
+    	int dealerValue = ThreeCardLogic.evalHand(this.dealer.getDealersHand());
+    	boolean dealerQual = true; //automatically qualified
+    	if(dealerValue == 0) {
+    		//gets all 3 cards' values
+    		ArrayList<Integer> dealerV = new ArrayList<>();
+            for(Card card : this.dealer.getDealersHand()) {
+            	int value = card.getValue();
+            	dealerV.add(value);
+            }
+            //sorts it
+            Collections.sort(dealerV);
+            //if hand is worse than a Queen high, no longer qualified
+            if(dealerV.get(2) <= 11) {
+            	dealerQual = false;
+            }
+    	}
+    	
+    	//figures out the evaluation of the cards and the winnings
+    	boolean keepAnte1 = false;
+    	boolean keepAnte2 = false;
+    	evaluateTheWinnings(dealerQual);
+    	
+    	//update scoreboard
+    	initializeWinnings(player1, player1Winnings);
+    	initializeWinnings(player2, player2Winnings);
+    	
+    	PauseTransition pause = new PauseTransition(Duration.seconds(7));
+    	pause.setOnFinished(event -> startAgain(keepAnte1, keepAnte2));
+    	pause.play();
+    	    	
+        System.out.println("game should complete!");
+    }
+    
+    //used for completeGame()
+    //compares and evaluates the cards and the winnings/losses for the players
+    private void evaluateTheWinnings(boolean dealerQual) {
+    	//finds details on the cards so that they'll get compared and evaluated
     	int player1Win = ThreeCardLogic.CompareHands(this.dealer.getDealersHand(), this.player1.getHand());
     	int player2Win = ThreeCardLogic.CompareHands(this.dealer.getDealersHand(), this.player2.getHand());
     	int player1PP = ThreeCardLogic.evalPPWinnings(this.player1.getHand(), this.player1.getPairPlusBet());
 		int player2PP = ThreeCardLogic.evalPPWinnings(this.player2.getHand(), this.player2.getPairPlusBet());
-
     	
     	//2 = player wins money, 1 = dealer takes the money, 0 = nothing, you get money returned
 		//for 2, it adds the antebet winnings, and gives the evaluated pair plus winnings (or loss)
 		//for player 1
-    	if(player1Win == 2) {
-    		if(this.player1.getHasFolded() == false) {
-        		this.player1.setTotalWinnings(this.player1.getTotalWinnings() + player1PP + (2 * this.player1.getAnteBet()));
-    		}
-    		else {
-        		this.player1.setTotalWinnings(this.player1.getTotalWinnings() + player1PP + this.player1.getAnteBet());
-    		}
-    	}
-    	else if(player1Win == 1) {
-    		if(this.player1.getHasFolded() == false) {
-        		this.player1.setTotalWinnings(this.player1.getTotalWinnings() + player1PP - (2 * this.player1.getAnteBet()));
-    		}
-    		else {
-        		this.player1.setTotalWinnings(this.player1.getTotalWinnings() + player1PP - this.player1.getAnteBet());
-    		}    	}
-    	//for player 2
-    	if(player2Win == 2) {
-    		if(this.player2.getHasFolded() == false) {
-        		this.player2.setTotalWinnings(this.player2.getTotalWinnings() + player2PP + (2 * this.player2.getAnteBet()));
-    		}
-    		else {
-        		this.player2.setTotalWinnings(this.player2.getTotalWinnings() + player2PP + this.player2.getAnteBet());
-    		}
-    	}
-    	else if(player2Win == 1) {
-    		if(this.player2.getHasFolded() == false) {
-        		this.player2.setTotalWinnings(this.player2.getTotalWinnings() + player2PP - (2 * this.player2.getAnteBet()));
-    		}
-    		else {
-        		this.player2.setTotalWinnings(this.player2.getTotalWinnings() + player2PP - this.player2.getAnteBet());
-    		}
-    	}
-    	
-    	initializeWinnings(player1, player1Winnings);
-    	initializeWinnings(player2, player2Winnings);
-    	
-        System.out.println("game should complete!");
+		if(this.player1.getHasFolded() == false) {
+			if(dealerQual == false) {
+				this.player1.setKeepAnte(true);
+			}
+			else if(player1Win == 2) {
+				this.player1.setTotalWinnings(this.player1.getTotalWinnings() + player1PP + (2 * this.player1.getAnteBet()));
+			}
+			else if(player1Win == 1) {
+				this.player1.setTotalWinnings(this.player1.getTotalWinnings() + player1PP - (2 * this.player1.getAnteBet()));
+			}
+		}
+		else {
+			this.player1.setTotalWinnings(this.player1.getTotalWinnings() - this.player1.getPairPlusBet() - this.player1.getAnteBet());
+		}
+		if(this.player2.getHasFolded() == false) {
+			if(dealerQual == false) {
+				this.player2.setKeepAnte(true);
+			}
+			else if(player2Win == 2) {
+				this.player2.setTotalWinnings(this.player2.getTotalWinnings() + player2PP + (2 * this.player2.getAnteBet()));
+			}
+			else if(player2Win == 1) {
+				this.player2.setTotalWinnings(this.player2.getTotalWinnings() + player2PP - (2 * this.player2.getAnteBet()));
+			}
+		}
+		else {
+			this.player2.setTotalWinnings(this.player2.getTotalWinnings() - this.player2.getPairPlusBet() - this.player2.getAnteBet());
+		}
     }
     
-    private void startAgain() {
+    private void startAgain(boolean keepAnte1, boolean keepAnte2) {
     	try {
-            this.resetGame(false);
+            this.resetGame(false, 1);
         }
         catch (Exception e) {
             System.err.println("resetGame() error!");
