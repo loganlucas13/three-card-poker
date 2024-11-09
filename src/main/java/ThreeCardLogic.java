@@ -113,13 +113,13 @@ public class ThreeCardLogic {
         	playerV.add(value);
         }
 
-        //sort the values
+        //sort the values in ascending order
 	    Collections.sort(dealerV);
 	    Collections.sort(playerV);
 
 	    //if the hands are a straight flush, a straight, or a flush, check each card's value to determine the winning hand
         if((evalD == 1 && evalP == 1) || (evalD == 3 && evalP == 3) || (evalD == 4 && evalP == 4)) {
-        	for(int i = 0; i < dealerV.size(); i++) {
+        	for(int i = dealerV.size() - 1; i >= 0; i++) {
         		if(dealerV.get(i) > playerV.get(i)) {
         			return 1;
         		}
