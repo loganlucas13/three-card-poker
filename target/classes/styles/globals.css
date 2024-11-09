@@ -1,10 +1,10 @@
 @font-face {
-    font-family: '04B_25__';
-    src: url('styles/fonts/04B_25__.TTF');
+    font-family: 04b25;
+    src: url('fonts/04B_25__.TTF');
 }
 
 .root {
-    -fx-font-family: '04b25';
+    -fx-font-family: "04b25";
     -fx-background-color: #486a1f;
 }
 
