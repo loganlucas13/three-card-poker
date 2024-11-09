@@ -13,6 +13,7 @@
     -fx-border-width: 5px;
     -fx-border-color: #d3c490;
     -fx-text-alignment: center;
+    -fx-alignment: center;
     -fx-pref-width: 280px;
     -fx-pref-height: 195px;
 }

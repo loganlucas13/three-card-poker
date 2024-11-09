@@ -80,7 +80,7 @@ public class Player {
         result += "\n\nPAIR PLUS RESULT: ";
 
 
-        int pairPlusWinnings = ThreeCardLogic.evalPPWinnings(this.getHand(), this.getPairPlusBet());
+        int pairPlusWinnings = ThreeCardLogic.evalPPWinnings(dealer.getDealersHand(), this.getPairPlusBet());
         if (this.getPairPlusBet() == pairPlusWinnings) {
             result += "1 TO 1";
         }
