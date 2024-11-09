@@ -408,7 +408,69 @@ public class GameController implements Initializable {
     // handles all events after both players have made their choice to add a play bet or fold
     // flips dealer cards, evaluates hands, and resets to begin game again
     private void completeGame() {
+    	try {
+    		//flip dealer cards
+    		this.flipCards(this.dealer, null, this.dealerCards);
+    	}
+    	catch (Exception e) {
+    		System.err.println(e.getMessage());
+    	}
+    	
+    	int player1Win = ThreeCardLogic.CompareHands(this.dealer.getDealersHand(), this.player1.getHand());
+    	int player2Win = ThreeCardLogic.CompareHands(this.dealer.getDealersHand(), this.player2.getHand());
+    	int player1PP = ThreeCardLogic.evalPPWinnings(this.player1.getHand(), this.player1.getPairPlusBet());
+		int player2PP = ThreeCardLogic.evalPPWinnings(this.player2.getHand(), this.player2.getPairPlusBet());
+
+    	
+    	//2 = player wins money, 1 = dealer takes the money, 0 = nothing, you get money returned
+		//for 2, it adds the antebet winnings, and gives the evaluated pair plus winnings (or loss)
+		//for player 1
+    	if(player1Win == 2) {
+    		if(this.player1.getHasFolded() == false) {
+        		this.player1.setTotalWinnings(this.player1.getTotalWinnings() + player1PP + (2 * this.player1.getAnteBet()));
+    		}
+    		else {
+        		this.player1.setTotalWinnings(this.player1.getTotalWinnings() + player1PP + this.player1.getAnteBet());
+    		}
+    	}
+    	else if(player1Win == 1) {
+    		if(this.player1.getHasFolded() == false) {
+        		this.player1.setTotalWinnings(this.player1.getTotalWinnings() + player1PP - (2 * this.player1.getAnteBet()));
+    		}
+    		else {
+        		this.player1.setTotalWinnings(this.player1.getTotalWinnings() + player1PP - this.player1.getAnteBet());
+    		}    	}
+    	//for player 2
+    	if(player2Win == 2) {
+    		if(this.player2.getHasFolded() == false) {
+        		this.player2.setTotalWinnings(this.player2.getTotalWinnings() + player2PP + (2 * this.player2.getAnteBet()));
+    		}
+    		else {
+        		this.player2.setTotalWinnings(this.player2.getTotalWinnings() + player2PP + this.player2.getAnteBet());
+    		}
+    	}
+    	else if(player2Win == 1) {
+    		if(this.player2.getHasFolded() == false) {
+        		this.player2.setTotalWinnings(this.player2.getTotalWinnings() + player2PP - (2 * this.player2.getAnteBet()));
+    		}
+    		else {
+        		this.player2.setTotalWinnings(this.player2.getTotalWinnings() + player2PP - this.player2.getAnteBet());
+    		}
+    	}
+    	
+    	initializeWinnings(player1, player1Winnings);
+    	initializeWinnings(player2, player2Winnings);
+    	
         System.out.println("game should complete!");
+    }
+    
+    private void startAgain() {
+    	try {
+            this.resetGame(false);
+        }
+        catch (Exception e) {
+            System.err.println("resetGame() error!");
+        }
     }
 
 
