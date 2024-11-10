@@ -60,7 +60,11 @@ public class Player {
         }
 
         result += "ANTE BET ";
-        switch (ThreeCardLogic.CompareHands(dealer.getDealersHand(), this.getHand())) {
+        if(dealer.getQualify() == false) {
+        	result += "MOVED TO NEXT BET";
+        }
+        else {
+            switch (ThreeCardLogic.CompareHands(dealer.getDealersHand(), this.getHand())) {
             case 0:
                 result += "TIE";
                 break;
@@ -70,6 +74,7 @@ public class Player {
             case 2:
                 result += "WIN";
                 break;
+            }
         }
 
         if (this.getPairPlusBet() == 0) {
@@ -80,7 +85,7 @@ public class Player {
         result += "\n\nPAIR PLUS RESULT: ";
 
 
-        int pairPlusWinnings = ThreeCardLogic.evalPPWinnings(dealer.getDealersHand(), this.getPairPlusBet());
+        int pairPlusWinnings = ThreeCardLogic.evalPPWinnings(this.getHand(), this.getPairPlusBet());
         if (this.getPairPlusBet() == pairPlusWinnings) {
             result += "1 TO 1";
         }

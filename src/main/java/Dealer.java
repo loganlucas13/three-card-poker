@@ -9,11 +9,12 @@ public class Dealer {
 
     // optional
     private boolean hasFlipped;
-
+    private boolean qualify;
 
     // constructor
     public Dealer() {
         this.theDeck = new Deck();
+        this.qualify = true;
     }
 
     // returns the hand type as a string
@@ -82,5 +83,13 @@ public class Dealer {
     }
     public void setHasFlipped(boolean hasFlipped) {
         this.hasFlipped = hasFlipped;
+    }
+    
+    // qualify
+    public boolean getQualify() {
+    	return this.qualify;
+    }
+    public void setQualify(boolean qualify) {
+    	this.qualify = qualify;
     }
 }

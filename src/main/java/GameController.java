@@ -9,7 +9,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
-import javafx.scene.Scene;
+//import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
@@ -499,19 +499,9 @@ public class GameController implements Initializable {
     // handles all events after both players have made their choice to add a play bet or fold
     // flips dealer cards, evaluates hands, and resets to begin game again
     private void completeGame() {
-    	try {
-    		//flip dealer cards
-    		this.flipCards(this.dealer, null, this.dealerCards);
-            this.dealerHandType.setText("HAND TYPE: " + this.dealer.handToString());
-
-    	}
-    	catch (Exception e) {
-    		System.err.println(e.getMessage());
-    	}
-
+    	
     	//checks to see if the dealer is qualified by checking if their hand is at least a Queen high
     	int dealerValue = ThreeCardLogic.evalHand(this.dealer.getDealersHand());
-    	boolean dealerQual = true; //automatically qualified
     	if(dealerValue == 0) {
     		//gets all 3 cards' values
     		ArrayList<Integer> dealerV = new ArrayList<>();
@@ -523,12 +513,27 @@ public class GameController implements Initializable {
             Collections.sort(dealerV);
             //if hand is worse than a Queen high, no longer qualified
             if(dealerV.get(2) <= 11) {
-            	dealerQual = false;
+            	this.dealer.setQualify(false);
             }
+    	}
+    	
+    	try {
+    		//flip dealer cards
+    		this.flipCards(this.dealer, null, this.dealerCards);
+    		//checks if dealer qualifies and writes it in the program
+    		if(this.dealer.getQualify() == false) {
+    			this.dealerHandType.setText("HAND TYPE: DID NOT QUALIFY");
+    		}
+    		else {
+    			this.dealerHandType.setText("HAND TYPE: " + this.dealer.handToString());
+    		}
+    	}
+    	catch (Exception e) {
+    		System.err.println(e.getMessage());
     	}
 
     	//figures out the evaluation of the cards and the winnings
-    	this.evaluateTheWinnings(dealerQual);
+    	this.evaluateTheWinnings();
 
     	//update scoreboard
     	this.initializeWinnings(player1, player1Winnings);
@@ -540,41 +545,60 @@ public class GameController implements Initializable {
 
     // used for completeGame()
     // compares and evaluates the cards and the winnings/losses for the players
-    private void evaluateTheWinnings(boolean dealerQual) {
+    private void evaluateTheWinnings() {
     	//finds details on the cards so that they'll get compared and evaluated
     	int player1Win = ThreeCardLogic.CompareHands(this.dealer.getDealersHand(), this.player1.getHand());
     	int player2Win = ThreeCardLogic.CompareHands(this.dealer.getDealersHand(), this.player2.getHand());
     	int player1PP = ThreeCardLogic.evalPPWinnings(this.player1.getHand(), this.player1.getPairPlusBet());
 		int player2PP = ThreeCardLogic.evalPPWinnings(this.player2.getHand(), this.player2.getPairPlusBet());
-
+		
+		//if player lost pair plus bet, lose that money
+		if(player1PP == 0) {
+			player1PP = this.player1.getPairPlusBet() * -1;
+		}
+		if(player2PP == 0) {
+			player2PP = this.player2.getPairPlusBet() * -1;
+		}
+		
     	//2 = player wins money, 1 = dealer takes the money, 0 = nothing, you get money returned
 		//for 2, it adds the antebet winnings, and gives the evaluated pair plus winnings (or loss)
 		//for player 1
 		if(this.player1.getHasFolded() == false) {
-			if(dealerQual == false) {
-				this.player1.setKeepAnte(true);
+			//does the dealer qualify
+			if(this.dealer.getQualify() == false) {
+				this.player1.setKeepAnte(true); //keep ante bet
+				this.player1.setTotalWinnings(this.player1.getTotalWinnings() + player1PP); //calculate pair plus evaluation
 			}
+			//if player wins
 			else if(player1Win == 2) {
 				this.player1.setTotalWinnings(this.player1.getTotalWinnings() + player1PP + (2 * this.player1.getAnteBet()));
 			}
+			//if player loses
 			else if(player1Win == 1) {
 				this.player1.setTotalWinnings(this.player1.getTotalWinnings() + player1PP - (2 * this.player1.getAnteBet()));
 			}
 		}
+		//fold
 		else {
 			this.player1.setTotalWinnings(this.player1.getTotalWinnings() - this.player1.getPairPlusBet() - this.player1.getAnteBet());
 		}
+		//for player 2
 		if(this.player2.getHasFolded() == false) {
-			if(dealerQual == false) {
-				this.player2.setKeepAnte(true);
+			//does the dealer qualify
+			if(this.dealer.getQualify() == false) {
+				this.player2.setKeepAnte(true); //keep ante bet
+				this.player2.setTotalWinnings(this.player2.getTotalWinnings() + player2PP); //calculate pair plus evaluation
 			}
+			//if player wins
 			else if(player2Win == 2) {
 				this.player2.setTotalWinnings(this.player2.getTotalWinnings() + player2PP + (2 * this.player2.getAnteBet()));
 			}
+			//if player loses
 			else if(player2Win == 1) {
 				this.player2.setTotalWinnings(this.player2.getTotalWinnings() + player2PP - (2 * this.player2.getAnteBet()));
 			}
 		}
+		//fold
 		else {
 			this.player2.setTotalWinnings(this.player2.getTotalWinnings() - this.player2.getPairPlusBet() - this.player2.getAnteBet());
 		}
