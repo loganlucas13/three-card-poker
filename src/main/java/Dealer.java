@@ -9,11 +9,33 @@ public class Dealer {
 
     // optional
     private boolean hasFlipped;
-
+    private boolean qualify;
 
     // constructor
     public Dealer() {
         this.theDeck = new Deck();
+        this.qualify = true;
+    }
+
+    // returns the hand type as a string
+    // (for printing out popup text)
+    public String handToString() {
+        switch (ThreeCardLogic.evalHand(this.getDealersHand())) {
+            case 0:
+                return "HIGH CARD";
+            case 1:
+                return "STRAIGHT FLUSH";
+            case 2:
+                return "THREE OF A KIND";
+            case 3:
+                return "STRAIGHT";
+            case 4:
+                return "FLUSH";
+            case 5:
+                return "PAIR";
+            default:
+                return "INVALID HAND TYPE";
+        }
     }
 
     // returns an ArrayList of 3 cards removed from this.theDeck
@@ -61,5 +83,13 @@ public class Dealer {
     }
     public void setHasFlipped(boolean hasFlipped) {
         this.hasFlipped = hasFlipped;
+    }
+    
+    // qualify
+    public boolean getQualify() {
+    	return this.qualify;
+    }
+    public void setQualify(boolean qualify) {
+    	this.qualify = qualify;
     }
 }

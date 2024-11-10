@@ -37,7 +37,7 @@
         </HBox>
     </HBox>
 
-    <VBox spacing="50">
+    <VBox spacing="25">
         <VBox alignment="TOP_CENTER" spacing="15">
             <Label text="DEALER" styleClass="navLabel"></Label>
             <HBox fx:id="dealerCards" alignment="TOP_CENTER" spacing="10">
@@ -45,17 +45,19 @@
                 <ImageView fx:id="dealerCard2" fitWidth="85" fitHeight="130"></ImageView>
                 <ImageView fx:id="dealerCard3" fitWidth="85" fitHeight="130"></ImageView>
             </HBox>
+            <Label fx:id="dealerHandType" text="HAND TYPE: ???" styleClass="navLabel"></Label>
         </VBox>
 
         <HBox alignment="BOTTOM_CENTER" spacing="100">
             <VBox fx:id="player1Controls" styleClass="playerControlsBox" alignment="BOTTOM_CENTER" spacing="15">
+                <Label fx:id="player1HandType" text="HAND TYPE: ???" styleClass="navLabel"></Label>
                 <HBox fx:id="player1Cards" spacing="15">
                     <ImageView fx:id="player1Card1" fitWidth="85" fitHeight="130"></ImageView>
                     <ImageView fx:id="player1Card2" fitWidth="85" fitHeight="130"></ImageView>
                     <ImageView fx:id="player1Card3" fitWidth="85" fitHeight="130"></ImageView>
                 </HBox>
 
-                <VBox spacing="2.5">
+                <VBox fx:id="player1ButtonBox" spacing="2.5">
                     <HBox styleClass="textBox" spacing="5" maxWidth="285">
                         <Label text="ANTE:" minWidth="135"></Label>
                         <Label fx:id="player1AnteBet" text="placeholder" minWidth="60"></Label>
@@ -86,13 +88,14 @@
 
 
             <VBox fx:id="player2Controls" styleClass="playerControlsBox" alignment="BOTTOM_CENTER" spacing="15">
+                <Label fx:id="player2HandType" text="HAND TYPE: ???" styleClass="navLabel"></Label>
                 <HBox fx:id="player2Cards" spacing="15">
                     <ImageView fx:id="player2Card1" fitWidth="85" fitHeight="130"></ImageView>
                     <ImageView fx:id="player2Card2" fitWidth="85" fitHeight="130"></ImageView>
                     <ImageView fx:id="player2Card3" fitWidth="85" fitHeight="130"></ImageView>
                 </HBox>
 
-                <VBox spacing="2.5">
+                <VBox fx:id="player2ButtonBox" spacing="2.5">
                     <HBox styleClass="textBox" spacing="5" maxWidth="285">
                         <Label text="ANTE:" minWidth="135"></Label>
                         <Label fx:id="player2AnteBet" text="placeholder" minWidth="60"></Label>

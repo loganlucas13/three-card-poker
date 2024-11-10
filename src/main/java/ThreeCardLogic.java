@@ -84,7 +84,7 @@ public class ThreeCardLogic {
             case 1: // straight flush
                 return bet * 40;
             default: // loss
-                return bet * -1;
+                return 0; // could return bet * -1, but returns since no amount was won
         }
     }
 
@@ -93,10 +93,11 @@ public class ThreeCardLogic {
     // 1 - dealer wins
     // 2 - player wins
     public static int CompareHands(ArrayList<Card> dealer, ArrayList<Card> player) {
-        //evaluated the hands
+        // evaluated the hands
     	int evalD = evalHand(dealer);
         int evalP = evalHand(player);
-        //see if dealer's hands are worth more than the player's
+
+        // see if dealer's hands are worth more than the player's
         if(evalD > evalP) {
         	if(evalP == 0) return 1;
         	else return 2;
@@ -122,17 +123,17 @@ public class ThreeCardLogic {
 	    Collections.sort(dealerV);
 	    Collections.sort(playerV);
 
-	    //if the hands are a straight flush, a straight, or a flush, check each card's value to determine the winning hand
-        if((evalD == 1 && evalP == 1) || (evalD == 3 && evalP == 3) || (evalD == 4 && evalP == 4)) {
+	    //if the hands are a high card, straight flush, a straight, or a flush, check each card's value to determine the winning hand
+        if ((evalD == 0 && evalP == 0) || (evalD == 1 && evalP == 1) || (evalD == 3 && evalP == 3) || (evalD == 4 && evalP == 4)) {
         	for(int i = dealerV.size() - 1; i >= 0; i--) {
         		if(dealerV.get(i) > playerV.get(i)) {
-        			return 1;
+        			return 1; // dealer wins
         		}
         		else if(dealerV.get(i) < playerV.get(i)) {
-        			return 2;
+        			return 2; // player wins
         		}
         	}
-        	return 0;
+        	return 0; // tie (exact same hand)
         }
 
         //if the hands are a three of a kind, you only need to check the highest value card for each hand
