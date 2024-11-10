@@ -631,11 +631,11 @@ public class GameController implements Initializable {
         Popup player2Popup = this.createPopup(this.player2, stage2);
 
         // to align the popup with the betting buttons
-        Bounds player1Bounds = this.player1ButtonBox.localToScene(this.player1ButtonBox.getBoundsInLocal());
-        Bounds player2Bounds = this.player2ButtonBox.localToScene(this.player2ButtonBox.getBoundsInLocal());
+        Bounds player1Bounds = this.player1ButtonBox.localToScreen(this.player1ButtonBox.getBoundsInLocal());
+        Bounds player2Bounds = this.player2ButtonBox.localToScreen(this.player2ButtonBox.getBoundsInLocal());
 
-        player1Popup.show(stage1, player1Bounds.getCenterX()-25, player1Bounds.getCenterY()-30);
-        player2Popup.show(stage2, player2Bounds.getCenterX()-25, player2Bounds.getCenterY()-30);
+        player1Popup.show(stage1, player1Bounds.getMinX()+2.5, player1Bounds.getMinY()+2.5);
+        player2Popup.show(stage2, player2Bounds.getMinX()+2.5, player1Bounds.getMinY()+2.5);
 
         // pauses the game to allow the player to read popup text
         PauseTransition pause = new PauseTransition(Duration.seconds(8));
