@@ -504,7 +504,7 @@ public class GameController implements Initializable {
     // handles all events after both players have made their choice to add a play bet or fold
     // flips dealer cards, evaluates hands, and resets to begin game again
     private void completeGame() {
-    	
+
     	//checks to see if the dealer is qualified by checking if their hand is at least a Queen high
     	int dealerValue = ThreeCardLogic.evalHand(this.dealer.getDealersHand());
     	if(dealerValue == 0) {
@@ -521,7 +521,7 @@ public class GameController implements Initializable {
             	this.dealer.setQualify(false);
             }
     	}
-    	
+
     	try {
     		//flip dealer cards
     		this.flipCards(this.dealer, null, this.dealerCards);
@@ -556,7 +556,7 @@ public class GameController implements Initializable {
     	int player2Win = ThreeCardLogic.CompareHands(this.dealer.getDealersHand(), this.player2.getHand());
     	int player1PP = ThreeCardLogic.evalPPWinnings(this.player1.getHand(), this.player1.getPairPlusBet());
 		int player2PP = ThreeCardLogic.evalPPWinnings(this.player2.getHand(), this.player2.getPairPlusBet());
-		
+
 		//if player lost pair plus bet, lose that money
 		if(player1PP == 0) {
 			player1PP = this.player1.getPairPlusBet() * -1;
@@ -564,7 +564,7 @@ public class GameController implements Initializable {
 		if(player2PP == 0) {
 			player2PP = this.player2.getPairPlusBet() * -1;
 		}
-		
+
     	//2 = player wins money, 1 = dealer takes the money, 0 = nothing, you get money returned
 		//for 2, it adds the antebet winnings, and gives the evaluated pair plus winnings (or loss)
 		//for player 1
@@ -634,8 +634,8 @@ public class GameController implements Initializable {
         Bounds player1Bounds = this.player1ButtonBox.localToScreen(this.player1ButtonBox.getBoundsInLocal());
         Bounds player2Bounds = this.player2ButtonBox.localToScreen(this.player2ButtonBox.getBoundsInLocal());
 
-        player1Popup.show(stage1, player1Bounds.getMinX()+2.5, player1Bounds.getMinY()+2.5);
-        player2Popup.show(stage2, player2Bounds.getMinX()+2.5, player1Bounds.getMinY()+2.5);
+        player1Popup.show(stage1, player1Bounds.getMinX()+2, player1Bounds.getMinY()+2);
+        player2Popup.show(stage2, player2Bounds.getMinX()+2, player1Bounds.getMinY()+2);
 
         // pauses the game to allow the player to read popup text
         PauseTransition pause = new PauseTransition(Duration.seconds(8));
