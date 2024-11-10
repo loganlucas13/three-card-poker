@@ -19,6 +19,14 @@
     -fx-border-color: #afa278;
 }
 
+#playButton {
+    -fx-text-fill: #375018;
+}
+#playButton:hover {
+    -fx-background-color: #749b43;
+    -fx-border-color: #2d4212;
+}
+
 #quitButton {
     -fx-text-fill: #b74c4d;
 }
