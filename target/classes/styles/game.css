@@ -1,0 +1,153 @@
+#topBar {
+    -fx-background-color: #375018;
+}
+
+.menu-bar {
+    -fx-background-color: #375018;
+    -fx-padding: 10px;
+}
+
+.menu {
+    -fx-background-color: transparent;
+    -fx-padding: 1px;
+}
+
+.menu .label {
+    -fx-font-size: 25;
+    -fx-min-width: 200px;
+    -fx-alignment: center;
+}
+.menu .label:hover {
+    -fx-text-fill: #f2f1da;
+    -fx-background-color: #d5d4b0;
+    -fx-border-color: #afa278;
+    -fx-scale-x: 1.01;
+    -fx-scale-y: 1.01;
+    -fx-scale-z: 1.01;
+    -fx-cursor: HAND;
+}
+
+.menu-item {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 5 5 0 0;
+}
+.menu-item .label {
+    -fx-pref-width: 200px;
+    -fx-alignment: center;
+}
+.menu-item:focused {
+    -fx-scale-x: 1.01;
+    -fx-scale-y: 1.01;
+    -fx-scale-z: 1.01;
+    -fx-opacity: 90%;
+    -fx-cursor: HAND;
+}
+.menu-item:focused .label {
+    -fx-text-fill: #f2f1da;
+    -fx-background-color: #d5d4b0;
+    -fx-border-color: #afa278;
+}
+
+.context-menu {
+    -fx-padding: 0;
+    -fx-background-color: transparent;
+    -fx-skin: "com.sun.javafx.scene.control.skin.ContextMenuSkin";
+}
+
+#exitButton .label {
+    -fx-text-fill: #b74c4d;
+}
+#exitButton:focused .label {
+    -fx-background-color: #732f30;
+    -fx-border-color: #993e3f;
+}
+
+.textBox {
+    -fx-padding: 2.5px;
+    -fx-font-size: 20px;
+}
+.textBox .label {
+    -fx-padding: 5px;
+    -fx-alignment: center;
+    -fx-border-width: 5px;
+}
+
+/* next three classes change color of winnings text based on how much money the player has won */
+.winningsText.zero {
+    -fx-text-fill: #000000;
+}
+.winningsText.positive {
+    -fx-text-fill: #375018;
+}
+.winningsText.negative {
+    -fx-text-fill: #b74c4d;
+}
+
+.image-view:hover {
+    -fx-scale-x: 1.01;
+    -fx-scale-y: 1.01;
+    -fx-scale-z: 1.01;
+}
+
+.navLabel {
+    -fx-font-size: 20;
+    -fx-padding: 5px;
+    -fx-border-width: 5px;
+}
+
+.increaseBetButton {
+    -fx-text-fill: #375018;
+    -fx-font-size: 20;
+    -fx-padding: 5px;
+    -fx-border-width: 5px;
+    -fx-text-alignment: center;
+    -fx-background-color: #f2f1da;
+    -fx-border-color: #d3c490;
+}
+.increaseBetButton:hover {
+    -fx-background-color: #749b43;
+    -fx-border-color: #2d4212;
+}
+
+.decreaseBetButton {
+    -fx-text-fill: #b74c4d;
+    -fx-font-size: 20;
+    -fx-padding: 5px;
+    -fx-border-width: 5px;
+    -fx-text-alignment: center;
+    -fx-background-color: #f2f1da;
+    -fx-border-color: #d3c490;
+}
+.decreaseBetButton:hover {
+    -fx-background-color: #732f30;
+    -fx-border-color: #993e3f;
+}
+
+.confirmButton {
+    -fx-text-fill: #375018;
+    -fx-font-size: 20;
+    -fx-padding: 5px;
+    -fx-border-width: 5px;
+    -fx-text-alignment: center;
+    -fx-background-color: #f2f1da;
+    -fx-border-color: #d3c490;
+}
+.confirmButton:hover {
+    -fx-background-color: #749b43;
+    -fx-border-color: #2d4212;
+}
+
+.foldButton {
+    -fx-text-fill: #b74c4d;
+    -fx-font-size: 20;
+    -fx-padding: 5px;
+    -fx-border-width: 5px;
+    -fx-text-alignment: center;
+    -fx-background-color: #f2f1da;
+    -fx-border-color: #d3c490;
+}
+.foldButton:hover {
+    -fx-background-color: #732f30;
+    -fx-border-color: #993e3f;
+}
