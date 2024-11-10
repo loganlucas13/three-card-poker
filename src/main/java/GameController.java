@@ -204,10 +204,13 @@ public class GameController implements Initializable {
 
         this.initializeDealer();
 
+        //ante1,ante2,keep1,keep2 are meant to see if the bet should be kept to the next round,
+        //depending on dealer's qualification
         int ante1 = this.player1.getAnteBet();
         int ante2 = this.player2.getAnteBet();
         boolean keep1 = this.player1.getKeepAnte();
         boolean keep2 = this.player1.getKeepAnte();
+        //remember the winnings if not reset
         int remember1 = this.player1.getTotalWinnings();
         int remember2 = this.player2.getTotalWinnings();
 
@@ -221,6 +224,7 @@ public class GameController implements Initializable {
         this.player1HandType.setText("HAND TYPE: ???");
         this.player2HandType.setText("HAND TYPE: ???");
 
+        //keep ante bet for next round if played and dealer's cards are not qualified
         if (keep1) {
         	this.player1.setAnteBet(ante1);
         	this.updateBetAmount(player1, player1AnteBet, "ante");
@@ -255,6 +259,7 @@ public class GameController implements Initializable {
 
         this.initializeDealer();
 
+        //remember winnings for the entire program until reset
         int remember1 = this.player1.getTotalWinnings();
         int remember2 = this.player2.getTotalWinnings();
 
