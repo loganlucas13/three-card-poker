@@ -638,7 +638,7 @@ public class GameController implements Initializable {
         player2Popup.show(stage2, player2Bounds.getCenterX()-25, player2Bounds.getCenterY()-30);
 
         // pauses the game to allow the player to read popup text
-        PauseTransition pause = new PauseTransition(Duration.seconds(7));
+        PauseTransition pause = new PauseTransition(Duration.seconds(8));
 
     	pause.setOnFinished(event -> {
             player1Popup.hide();
