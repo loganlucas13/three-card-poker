@@ -100,4 +100,34 @@ public class DealerTest {
 		dealer = new Dealer();
 		assertEquals(null, dealer.getDealersHand());
 	}
+	
+	@Test
+	void detailTest1() {
+		ArrayList<Card> three = new ArrayList<Card>();
+    	three.add(new Card('D', 13));
+    	three.add(new Card('D', 14));
+    	three.add(new Card('C', 2));
+    	dealer.setDealersHand(three);
+    	assertEquals("HIGH CARD", dealer.handToString());
+	}
+	
+	@Test
+	void detailTest2() {
+		ArrayList<Card> three = new ArrayList<Card>();
+    	three.add(new Card('S', 14));
+    	three.add(new Card('D', 14));
+    	three.add(new Card('C', 2));
+    	dealer.setDealersHand(three);
+    	assertEquals("PAIR", dealer.handToString());
+	}
+	
+	@Test
+	void detailTest3() {
+		ArrayList<Card> three = new ArrayList<Card>();
+    	three.add(new Card('S', 14));
+    	three.add(new Card('D', 14));
+    	three.add(new Card('C', 14));
+    	dealer.setDealersHand(three);
+    	assertEquals("THREE OF A KIND", dealer.handToString());
+	}
 }
