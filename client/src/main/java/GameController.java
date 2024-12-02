@@ -36,6 +36,11 @@ public class GameController implements Initializable {
     private MenuItem exitButton;
 
     @FXML
+    private Label ipDisplay;
+    @FXML
+    private Label portDisplay;
+
+    @FXML
     private Label playerWinnings;
 
     @FXML
@@ -94,6 +99,8 @@ public class GameController implements Initializable {
     private ArrayList<ImageView> playerCards;
 
     private String cardBackFileName;
+
+    private final PokerInfo gameInstance = PokerInfoSingleton.getInstance();
 
 
     // constructor
@@ -681,6 +688,13 @@ public class GameController implements Initializable {
     }
 
 
+    // initializes the ip address and port labels in the top left
+    private void initializeNetworkDisplay() {
+        this.ipDisplay.setText(this.gameInstance.getIp());
+        this.portDisplay.setText(Integer.toString(this.gameInstance.getPort()));
+    }
+
+
     // initializes the menu in the top left of the screen
     private void initializeMenu() {
         // event handler for the reset button found in the menu bar (top left)
@@ -865,6 +879,7 @@ public class GameController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         try {
             this.initializeMenu();
+            this.initializeNetworkDisplay();
             this.resetGame(true);
         }
         catch (Exception e) {

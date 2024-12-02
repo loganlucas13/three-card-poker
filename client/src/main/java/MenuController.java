@@ -7,6 +7,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 public class MenuController implements Initializable{
@@ -15,12 +16,23 @@ public class MenuController implements Initializable{
 
     @FXML
     private Button playButton;
-
     @FXML
     private Button rulesButton;
-
     @FXML
     private Button quitButton;
+
+    @FXML
+    private Button confirmIp;
+    @FXML
+    private Button confirmPort;
+
+    @FXML
+    private TextField ipField;
+    @FXML
+    private TextField portField;
+
+    // stores the instance of the game for modifications
+    private final PokerInfo gameInstance = PokerInfoSingleton.getInstance();
 
 
     // event for playButton
@@ -56,6 +68,20 @@ public class MenuController implements Initializable{
     }
 
 
+    // event for ipField
+    // updates the ip address of the game
+    private void updateIp(String ip) throws Exception {
+        this.gameInstance.setIp(ip);
+    }
+
+
+    // event for portField
+    // updates the port of the game
+    private void updatePort(int port) throws Exception {
+        this.gameInstance.setPort(port);
+    }
+
+
     // initializes all event handlers
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -86,6 +112,27 @@ public class MenuController implements Initializable{
             }
             catch (Exception e) {
                 System.err.println("quitGame() error!\n");
+            }
+        });
+
+        // event handler to get ip from text field
+        this.confirmIp.setOnAction(event -> {
+            try {
+                this.updateIp(this.ipField.getText());
+            }
+            catch (Exception e) {
+                System.err.println("updateIp() error!\n");
+            }
+        });
+
+        // event handler to get port from text field
+        this.confirmPort.setOnAction(event -> {
+            try {
+                int port = Integer.parseInt(this.portField.getText()); // casts user text as integer
+                this.updatePort(port);
+            }
+            catch (Exception e) {
+                System.err.println("updatePort() error!\n");
             }
         });
     }
