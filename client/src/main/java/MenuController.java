@@ -72,6 +72,10 @@ public class MenuController implements Initializable{
     // updates the ip address of the game
     private void updateIp(String ip) throws Exception {
         this.gameInstance.setIp(ip);
+
+        if (!(this.gameInstance.getIp().equals("undefined") || this.gameInstance.getPort() == -1)) {
+            this.playButton.setDisable(false);
+        }
     }
 
 
@@ -79,12 +83,17 @@ public class MenuController implements Initializable{
     // updates the port of the game
     private void updatePort(int port) throws Exception {
         this.gameInstance.setPort(port);
+
+        if (!(this.gameInstance.getIp().equals("undefined") || this.gameInstance.getPort() == -1)) {
+            this.playButton.setDisable(false);
+        }
     }
 
 
     // initializes all event handlers
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        this.playButton.setDisable(true);
         // event handler to start the game
         this.playButton.setOnAction(event -> {
             try {
