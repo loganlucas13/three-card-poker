@@ -10,7 +10,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
-public class MenuController implements Initializable{
+public class MenuController implements Initializable {
 
     // data members
 
