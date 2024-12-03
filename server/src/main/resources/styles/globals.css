@@ -1,0 +1,27 @@
+@font-face {
+    font-family: 04b25;
+    src: url('fonts/04B_25__.TTF');
+}
+
+.root {
+    -fx-font-family: "04b25";
+    -fx-background-color: #486a1f;
+}
+
+.label {
+    -fx-background-color: #f2f1da;
+    -fx-padding: 15px;
+    -fx-border-width: 10px;
+    -fx-border-color: #d3c490;
+}
+
+.button {
+    -fx-background-insets: 0;
+}
+.button:hover {
+    -fx-opacity: 95%;
+    -fx-scale-x: 1.01;
+    -fx-scale-y: 1.01;
+    -fx-scale-z: 1.01;
+    -fx-cursor: HAND;
+}

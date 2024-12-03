@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="src/main/resources/images/deck-of-cards/backs/Back2.png">
+  <img src="client/src/main/resources/images/deck-of-cards/backs/Back2.png">
   <h1>
     Three Card Poker - v1.0.0
   </h1>
