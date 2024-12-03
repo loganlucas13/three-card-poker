@@ -89,11 +89,23 @@ public class MenuController implements Initializable {
         }
     }
 
+    // fills text fields for ip and port and allows user to start game
+    private void enablePlay() {
+        this.ipField.setText(this.gameInstance.getIp());
+        this.portField.setText(Integer.toString(this.gameInstance.getPort()));
+        this.playButton.setDisable(false);
+    }
 
-    // initializes all event handlers
+    // initializes all event handlers and does checks
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         this.playButton.setDisable(true);
+
+        // saves information if the user already input their ip and port and then switched to the rules tab
+        if (!(this.gameInstance.getIp().equals("undefined") || this.gameInstance.getPort() == -1)) {
+            this.enablePlay();
+        }
+
         // event handler to start the game
         this.playButton.setOnAction(event -> {
             try {
