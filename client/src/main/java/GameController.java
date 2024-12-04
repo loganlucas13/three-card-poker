@@ -103,6 +103,9 @@ public class GameController implements Initializable {
     private final PokerInfo gameInstance = PokerInfoSingleton.getInstance();
 
 
+    //the server
+    Client client;
+    
     // constructor
     public GameController() {
         this.dealer = new Dealer();
