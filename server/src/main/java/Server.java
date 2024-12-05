@@ -192,8 +192,11 @@ public class Server {
 					else if (request.equals("EVALUATE_WINNINGS")) {
 						System.out.println("evaluating winnings for client #" + count);
 
+						player.setHasFolded(gameInstance.getHasFolded());
+
 						if (gameInstance.getHasFolded()) {
 							player.setTotalWinnings(player.getTotalWinnings() - player.getPairPlusBet() - player.getAnteBet());
+							gameInstance.setWillPushAnte(false); // prevent user from pushing ante after folding
 						}
 						else {
 							int gameResult = ThreeCardLogic.CompareHands(dealer.getDealersHand(), player.getHand());
