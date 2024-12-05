@@ -47,7 +47,7 @@ public class Dealer {
     	}
 
         // create new hand to return
-        ArrayList<Card> newHand = new ArrayList<Card>(3);
+        ArrayList<Card> newHand = new ArrayList<>(3);
 
         // adds three cards to the hand
     	// removes top card 3 times
@@ -84,7 +84,7 @@ public class Dealer {
     public void setHasFlipped(boolean hasFlipped) {
         this.hasFlipped = hasFlipped;
     }
-    
+
     // qualify
     public boolean getQualify() {
     	return this.qualify;

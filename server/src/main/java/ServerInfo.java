@@ -1,3 +1,4 @@
+
 public class ServerInfo {
 
     // purpose of this class is to hold the data needed for server operations
@@ -8,6 +9,7 @@ public class ServerInfo {
     private static String ip;
     private static int port;
     private static boolean isRunning;
+    private static Server server;
 
     // getters and setters
 
@@ -33,5 +35,13 @@ public class ServerInfo {
     }
     public static void setIsRunning(boolean isRunning) {
         ServerInfo.isRunning = isRunning;
+    }
+
+    // server
+    public static Server getServer() {
+        return ServerInfo.server;
+    }
+    public static void setServer(Server server) {
+        ServerInfo.server = server;
     }
 }

@@ -1,7 +1,7 @@
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.Collections;
 
 public class ThreeCardLogic {
 
@@ -170,5 +170,25 @@ public class ThreeCardLogic {
         else if(playerKicker < dealerKicker) return 1;
         //if hands are both equal in value, return 0
         return 0;
+    }
+
+
+    // checks if dealer (parameter) has at least a Queen high
+    // if they do, returns true
+    // returns false otherwise
+    public static boolean doesDealerQualify(Dealer dealer) {
+        // checks if dealer has a high card
+        int dealerValue = ThreeCardLogic.evalHand(dealer.getDealersHand());
+        if (dealerValue != 0) {
+            return true;
+        }
+
+        // puts dealer's card ranks into a list and checks if their
+        // highest rank is greater than a Queen
+        ArrayList<Integer> cardRanks = new ArrayList<>();
+        for (Card card : dealer.getDealersHand()) {
+            cardRanks.add(card.getValue());
+        }
+        return Collections.max(cardRanks) > 11;
     }
 }

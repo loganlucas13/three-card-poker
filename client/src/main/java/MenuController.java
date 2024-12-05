@@ -102,7 +102,7 @@ public class MenuController implements Initializable {
         this.playButton.setDisable(true);
 
         // saves information if the user already input their ip and port and then switched to the rules tab
-        if (!(this.gameInstance.getIp().equals("undefined") || this.gameInstance.getPort() == -1)) {
+        if (!(this.gameInstance.getIp().equals("127.0.0.1") || this.gameInstance.getPort() == -1)) {
             this.enablePlay();
         }
 
@@ -151,6 +151,7 @@ public class MenuController implements Initializable {
             try {
                 int port = Integer.parseInt(this.portField.getText()); // casts user text as integer
                 this.updatePort(port);
+                System.out.println(port);
             }
             catch (Exception e) {
                 System.err.println("updatePort() error!\n");

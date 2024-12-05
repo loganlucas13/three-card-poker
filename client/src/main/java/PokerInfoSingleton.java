@@ -1,4 +1,7 @@
-public class PokerInfoSingleton {
+
+import java.io.Serializable;
+
+public class PokerInfoSingleton implements Serializable {
     // so that only one gameInstance exists
     private static PokerInfo gameInstance;
 
@@ -6,8 +9,13 @@ public class PokerInfoSingleton {
     // if game instance doesn't exist, then creates a new instance and returns it
     public static PokerInfo getInstance() {
         if (gameInstance == null) {
-            gameInstance = new PokerInfo();
+            PokerInfoSingleton.gameInstance = new PokerInfo();
         }
-        return gameInstance;
+        return PokerInfoSingleton.gameInstance;
+    }
+
+    // resets instance of game (use case ex - when starting new round)
+    public static void resetGameInstance() {
+        PokerInfoSingleton.gameInstance = new PokerInfo();
     }
 }

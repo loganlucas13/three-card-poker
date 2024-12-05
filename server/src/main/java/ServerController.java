@@ -27,7 +27,7 @@ public class ServerController implements Initializable {
 
     // starts the server at specified port
     void startServer(int port) throws Exception {
-        // TODO: add starting server code
+        ServerInfo.getServer().server.start(); // because we have nested server classes
         ServerInfo.setIsRunning(true);
         this.startServerButton.setDisable(true);
         this.closeServerButton.setDisable(false);
@@ -36,7 +36,7 @@ public class ServerController implements Initializable {
 
     // closes the server at specified port
     void closeServer(int port) throws Exception {
-        // TODO: add closing server code
+        ServerInfo.getServer().server.interrupt();
         ServerInfo.setIsRunning(false);
         this.startServerButton.setDisable(false);
         this.closeServerButton.setDisable(true);

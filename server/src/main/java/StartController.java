@@ -20,7 +20,8 @@ public class StartController implements Initializable {
 
     // begins server at specified port
     void startServer(int port) throws Exception {
-        // TODO: add server code
+        Server server = new Server();
+        ServerInfo.setServer(server);
     }
 
     // switches scene to main server display

@@ -1,6 +1,5 @@
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.ResourceBundle;
 
 import javafx.animation.PauseTransition;
@@ -89,9 +88,6 @@ public class GameController implements Initializable {
 
     // data members
     // (for game functionality)
-    private Dealer dealer;
-
-    private Player player;
 
     private ArrayList<Button> playerBetButtons;
 
@@ -100,19 +96,15 @@ public class GameController implements Initializable {
 
     private String cardBackFileName;
 
-    private final PokerInfo gameInstance = PokerInfoSingleton.getInstance();
+    private PokerInfo gameInstance = PokerInfoSingleton.getInstance();
 
-
-    //the server
     Client client;
-    
+
     // constructor
     public GameController() {
-        this.dealer = new Dealer();
-
-        this.player = new Player();
-
         this.cardBackFileName = "/images/deck-of-cards/backs/Back2.png";
+        this.client = new Client();
+        this.client.start();
     }
 
 
@@ -151,11 +143,11 @@ public class GameController implements Initializable {
 
         this.cardBackFileName = filenames.get(randomIndex);
 
-        if (!this.player.getHasConfirmed()) {
+        if (!this.gameInstance.getShowPlayer()) {
             // if both players have not confirmed, update card image to the backing (cards haven't been flipped yet)
             this.setAllCardImages();
         }
-        else if (!this.dealer.getHasFlipped()) {
+        else if (!this.gameInstance.getShowDealer()) {
             // if the dealer has not flipped their cards, update the backing of the cards
             for (ImageView card : this.dealerCards) {
                 this.setCardImage(card, this.cardBackFileName);
@@ -167,71 +159,38 @@ public class GameController implements Initializable {
     // resets game
     // can be used to either reset the game completely or move onto the next round
     // 'willResetWinnings' should be false when continuing the game, true otherwise
-    // keepAnte1 and keepAnte2 determine if they'll be kept because of dealer's qualification
-    // main variable kind of just exists for this method to be used after game ends
-    private void resetGame(boolean willResetWinnings, int main) throws Exception {
-        this.dealer = new Dealer();
+    private void resetGame(boolean willResetWinnings) throws Exception {
+        int savedWinnings = this.gameInstance.getTotalWinnings();
 
+        // saves ante bet if dealer did not qualify
+        int savedAnte = this.gameInstance.getAnte();
+        boolean shouldSaveAnte = this.gameInstance.getWillPushAnte();
+
+        PokerInfoSingleton.resetGameInstance();
+        this.gameInstance = PokerInfoSingleton.getInstance();
+
+        // initialize card displays
         this.initializeDealer();
+        this.initializePlayer();
 
-        //ante1,ante2,keep1,keep2 are meant to see if the bet should be kept to the next round,
-        //depending on dealer's qualification
-        int ante1 = this.player.getAnteBet();
-        boolean keep1 = this.player.getKeepAnte();
-        //remember the winnings if not reset
-        int remember1 = this.player.getTotalWinnings();
-
-        this.player = new Player();
-
-        this.initializePlayer1();
-
-        this.dealerHandType.setText("HAND TYPE: ???");
-        this.playerHandType.setText("HAND TYPE: ???");
-
-        //keep ante bet for next round if played and dealer's cards are not qualified
-        if (keep1) {
-        	this.player.setAnteBet(ante1);
-        	this.updateBetAmount(player, playerAnteBet, "ante");
+        if (shouldSaveAnte) {
+            this.gameInstance.setAnte(savedAnte);
+            this.updateBetAmount(playerAnteBet, "ante");
             this.playerIncreaseAnteBet.setDisable(true);
             this.playerDecreaseAnteBet.setDisable(true);
         }
 
-        // winnings boxes in the top right
-        if (willResetWinnings) {
-            this.initializeWinnings(player, playerWinnings);
+        // saves winnings from previous rounds in new gameInstance
+        if (!willResetWinnings) {
+            this.gameInstance.setTotalWinnings(savedWinnings);
         }
-        else {
-        	this.player.setTotalWinnings(remember1);
-        }
-    }
 
+        // set box in the top right
+        this.initializeWinnings();
 
-    // overloaded
-    // resets game
-    // can be used to either reset the game completely or move onto the next round
-    // 'willResetWinnings' should be false when continuing the game, true otherwise
-    private void resetGame(boolean willResetWinnings) throws Exception {
-        this.dealer = new Dealer();
-
-        this.initializeDealer();
-
-        //remember winnings for the entire program until reset
-        int remember1 = this.player.getTotalWinnings();
-
-        this.player = new Player();
-
-        this.initializePlayer1();
-
+        // set text to default values
         this.dealerHandType.setText("HAND TYPE: ???");
         this.playerHandType.setText("HAND TYPE: ???");
-
-        // winnings boxes in the top right
-        if (willResetWinnings) {
-            this.initializeWinnings(player, playerWinnings);
-        }
-        else {
-        	this.player.setTotalWinnings(remember1);
-        }
     }
 
 
@@ -240,48 +199,48 @@ public class GameController implements Initializable {
     // if ante or pair plus bet == 0, increases by 5 (min $5 wager)
     // if ante or pair plus bet is >= 25, they are not updated (max $25 wager)
     // valid betType parameters: "ante", "pair plus", "play"
-    private void increaseBet(Player player, Label betDisplay, String betType, Button increaseButton, Button decreaseButton, Button confirmButton) throws Exception {
+    private void increaseBet(Label betDisplay, String betType) throws Exception {
         if (betType.equals("ante")) {
-            if (player.getAnteBet() >= 25) {
-                increaseButton.setDisable(true);
+            if (this.gameInstance.getAnte() >= 25) {
+                this.playerIncreaseAnteBet.setDisable(true);
                 return;
             }
-            else if (player.getAnteBet() == 24) {
-                player.setAnteBet(player.getAnteBet()+1);
-                increaseButton.setDisable(true);
+            else if (this.gameInstance.getAnte() == 24) {
+                this.gameInstance.setAnte(this.gameInstance.getAnte()+1);
+                this.playerIncreaseAnteBet.setDisable(true);
             }
             else {
-                player.setAnteBet(player.getAnteBet()+1);
-                decreaseButton.setDisable(false);
+                this.gameInstance.setAnte(this.gameInstance.getAnte()+1);
+                this.playerDecreaseAnteBet.setDisable(false);
             }
         }
         else if (betType.equals("pair plus")) {
-            if (player.getPairPlusBet() >= 25) {
-                increaseButton.setDisable(true);
+            if (this.gameInstance.getPairPlus() >= 25) {
+                this.playerIncreasePairPlusBet.setDisable(true);
                 return;
             }
-            else if (player.getPairPlusBet() == 24) {
-                player.setPairPlusBet(player.getPairPlusBet()+1);
-                increaseButton.setDisable(true);
+            else if (this.gameInstance.getPairPlus() == 24) {
+                this.gameInstance.setPairPlus(this.gameInstance.getPairPlus()+1);
+                this.playerIncreasePairPlusBet.setDisable(true);
             }
-            else if (player.getPairPlusBet() == 0) {
-                player.setPairPlusBet(player.getPairPlusBet()+5);
-                decreaseButton.setDisable(false);
+            else if (this.gameInstance.getPairPlus() == 0) {
+                this.gameInstance.setPairPlus(this.gameInstance.getPairPlus()+5);
+                this.playerDecreasePairPlusBet.setDisable(false);
             }
             else {
-                player.setPairPlusBet(player.getPairPlusBet()+1);
-                decreaseButton.setDisable(false);
+                this.gameInstance.setPairPlus(this.gameInstance.getPairPlus()+1);
+                this.playerDecreasePairPlusBet.setDisable(false);
             }
         }
         else if (betType.equals("play")) {
-            player.setPlayBet(player.getAnteBet()); // play bet must be equal to ante bet
-            increaseButton.setDisable(true);
+            this.gameInstance.setPlay(this.gameInstance.getAnte()); // play bet must be equal to ante bet
+            this.playerIncreasePlayBet.setDisable(true);
         }
         else {
             System.err.println("error increasing bet amount'");
             return;
         }
-        this.updateBetAmount(player, betDisplay, betType);
+        this.updateBetAmount(betDisplay, betType);
     }
 
 
@@ -290,34 +249,34 @@ public class GameController implements Initializable {
     // if ante <= 5, it is not updated (min $5 wager)
     // if pair plus <= 0, it is not updated (no negative bets)
     // valid betType parameters: "ante", "pair plus"
-    private void decreaseBet(Player player, Label betDisplay, String betType, Button increaseButton, Button decreaseButton) throws Exception {
+    private void decreaseBet(Label betDisplay, String betType) throws Exception {
         if (betType.equals("ante")) {
-            if (player.getAnteBet() == 25) {
-                increaseButton.setDisable(false);
+            if (this.gameInstance.getAnte() == 25) {
+                this.playerIncreaseAnteBet.setDisable(false);
             }
-            else if (player.getAnteBet() <= 6) {
-                decreaseButton.setDisable(true);
+            else if (this.gameInstance.getAnte() <= 6) {
+                this.playerDecreaseAnteBet.setDisable(true);
             }
-            player.setAnteBet(player.getAnteBet()-1);
+            this.gameInstance.setAnte(this.gameInstance.getAnte()-1);
         }
         else if (betType.equals("pair plus")) {
-            if (player.getPairPlusBet() == 25) {
-                player.setPairPlusBet(player.getPairPlusBet()-1);
-                increaseButton.setDisable(false);
+            if (this.gameInstance.getPairPlus() == 25) {
+                this.gameInstance.setPairPlus(this.gameInstance.getPairPlus()-1);
+                this.playerIncreasePairPlusBet.setDisable(false);
             }
-            else if (player.getPairPlusBet() == 5) {
-                player.setPairPlusBet(player.getPairPlusBet()-5);
-                decreaseButton.setDisable(true);
+            else if (this.gameInstance.getPairPlus() == 5) {
+                this.gameInstance.setPairPlus(this.gameInstance.getPairPlus()-5);
+                this.playerDecreasePairPlusBet.setDisable(true);
             }
             else {
-                player.setPairPlusBet(player.getPairPlusBet()-1);
+                this.gameInstance.setPairPlus(this.gameInstance.getPairPlus()-1);
             }
         }
         else {
             System.err.println("error decreasing bet amount'");
             return;
         }
-        this.updateBetAmount(player, betDisplay, betType);
+        this.updateBetAmount(betDisplay, betType);
     }
 
 
@@ -325,18 +284,18 @@ public class GameController implements Initializable {
     // > 0 - green
     // < 0 - red
     // 0 - black (default)
-    private void changeWinningsTextColor(Player player, Label playerWinnings) {
-        if (player.getTotalWinnings() > 0) {
-            playerWinnings.getStyleClass().removeAll("negative", "zero");
-            playerWinnings.getStyleClass().add("positive");
+    private void changeWinningsTextColor() {
+        if (this.gameInstance.getTotalWinnings() > 0) {
+            this.playerWinnings.getStyleClass().removeAll("negative", "zero");
+            this.playerWinnings.getStyleClass().add("positive");
         }
-        else if (player.getTotalWinnings() < 0) {
-            playerWinnings.getStyleClass().removeAll("positive", "zero");
-            playerWinnings.getStyleClass().add("negative");
+        else if (this.gameInstance.getTotalWinnings() < 0) {
+            this.playerWinnings.getStyleClass().removeAll("positive", "zero");
+            this.playerWinnings.getStyleClass().add("negative");
         }
         else {
-            playerWinnings.getStyleClass().removeAll("positive", "negative");
-            playerWinnings.getStyleClass().add("zero");
+            this.playerWinnings.getStyleClass().removeAll("positive", "negative");
+            this.playerWinnings.getStyleClass().add("zero");
         }
     }
 
@@ -385,15 +344,15 @@ public class GameController implements Initializable {
     // updates bet display on user interface
     // should be called after every increase/decrease of bet amount
     // valid betType parameters: "ante", "pair plus", "play"
-    private void updateBetAmount(Player player, Label betDisplay, String betType) {
+    private void updateBetAmount(Label betDisplay, String betType) {
         if (betType.equals("ante")) {
-            betDisplay.setText("$" + player.getAnteBet());
+            betDisplay.setText("$" + this.gameInstance.getAnte());
         }
         else if (betType.equals("pair plus")) {
-            betDisplay.setText("$" + player.getPairPlusBet());
+            betDisplay.setText("$" + this.gameInstance.getPairPlus());
         }
         else if (betType.equals("play")) {
-            betDisplay.setText("$" + player.getPlayBet());
+            betDisplay.setText("$" + this.gameInstance.getPlay());
         }
         else {
             System.err.println("invalid 'betType' parameter in 'updateBetAmount()'");
@@ -403,21 +362,18 @@ public class GameController implements Initializable {
 
     // confirms all bets and disables betting buttons for a single player
     // also checks if both players have confirmed; if they have, then the game begins
-    private void confirmBets(Player player, ArrayList<Button> betButtons) {
+    private void confirmBets(ArrayList<Button> betButtons) {
         // under minimum ante bet
-        if (player.getAnteBet() < 5) {
+        if (this.gameInstance.getAnte() < 5) {
             return;
         }
-
-        player.setHasConfirmed(true);
 
         for (int i = 0; i < betButtons.size(); i++) {
             betButtons.get(i).setDisable(true);
         }
 
-        if (player.getHasConfirmed()) {
-            this.startGame();
-        }
+        this.gameInstance.setShowPlayer(true);
+        this.startGame();
     }
 
 
@@ -430,16 +386,35 @@ public class GameController implements Initializable {
         // distribute cards
         this.dealCards();
 
-        // flips player cards (updates image)
         try {
-            // flip player cards
-            this.flipCards(null, this.player, this.playerCards);
-
-            // update hand labels found above the card display
-            this.playerHandType.setText("HAND TYPE: " + this.player.handToString());
+            this.flipCards(this.playerCards);
+        } catch (Exception e) {
+            System.err.println("error while flipping player cards");
         }
-        catch (Exception e) {
-            System.err.println(e.getMessage());
+    }
+
+
+    // flips cards for either a player or dealer, depending on input
+    // if flipping for the dealer, set player == null
+    // if flipping for a player, set dealer == null
+    private void flipCards(ArrayList<ImageView> cards) throws Exception {
+        ArrayList<Card> hand;
+
+        if (this.gameInstance.getShowDealer()) {
+            hand = this.gameInstance.getDealerHand();
+            this.dealerHandType.setText("HAND TYPE: " + this.gameInstance.getDealerHandString());
+        }
+        else if (this.gameInstance.getShowPlayer()) {
+            hand = this.gameInstance.getPlayerHand();
+            this.playerHandType.setText("HAND TYPE: " + this.gameInstance.getPlayerHandString());
+        }
+        else {
+            throw new Exception("attempting to flip cards when neither player or dealer should be shown");
+        }
+
+        for (int i = 0; i < hand.size(); i++) {
+            String filename = this.getCardFilename(hand.get(i));
+            this.setCardImage(cards.get(i), filename);
         }
     }
 
@@ -448,89 +423,69 @@ public class GameController implements Initializable {
     // flips dealer cards, evaluates hands, and resets to begin game again
     private void completeGame() {
 
-    	//checks to see if the dealer is qualified by checking if their hand is at least a Queen high
-    	int dealerValue = ThreeCardLogic.evalHand(this.dealer.getDealersHand());
-    	if(dealerValue == 0) {
-    		//gets all 3 cards' values
-    		ArrayList<Integer> dealerV = new ArrayList<>();
-            for(Card card : this.dealer.getDealersHand()) {
-            	int value = card.getValue();
-            	dealerV.add(value);
+        // checks if dealer qualifies
+        this.gameInstance.setRequest("CHECK_DEALER_QUALIFICATION");
+        this.client.send(this.gameInstance);
+
+        try {
+            Object response = this.client.read();
+            if (response instanceof PokerInfo) {
+                this.gameInstance = (PokerInfo) response;
             }
-            //sorts it
-            Collections.sort(dealerV);
-            //if hand is worse than a Queen high, no longer qualified
-            if(dealerV.get(2) <= 11) {
-            	this.dealer.setQualify(false);
+        }
+        catch (Exception e) {
+            System.err.println("error updating gameInstance in GameController.completeGame() dealer qualification");
+        }
+
+        try {
+            this.flipCards(this.dealerCards);
+        } catch (Exception e) {
+            System.err.println("error while flipping dealer cards");
+        }
+
+        if (gameInstance.getRequest().equals("DEALER DOES NOT QUALIFY")) {
+            this.dealerHandType.setText("HAND TYPE: DID NOT QUALIFY");
+            // keep ante and continue to next game
+        }
+
+        // evaluate winnings
+        this.gameInstance.setRequest("EVALUATE_WINNINGS");
+        this.client.send(this.gameInstance);
+
+        try {
+            Object response = this.client.read();
+            if (response instanceof PokerInfo) {
+                this.gameInstance = (PokerInfo) response;
             }
-    	}
+        }
+        catch (Exception e) {
+            System.err.println("error updating gameInstance in GameController.completeGame() winnings evaluation");
+        }
 
-    	try {
-    		//flip dealer cards
-    		this.flipCards(this.dealer, null, this.dealerCards);
-    		//checks if dealer qualifies and writes it in the program
-    		if(this.dealer.getQualify() == false) {
-    			this.dealerHandType.setText("HAND TYPE: DID NOT QUALIFY");
-    		}
-    		else {
-    			this.dealerHandType.setText("HAND TYPE: " + this.dealer.handToString());
-    		}
-    	}
-    	catch (Exception e) {
-    		System.err.println(e.getMessage());
-    	}
+        this.initializeWinnings();
 
-    	//figures out the evaluation of the cards and the winnings
-    	this.evaluateTheWinnings();
+        // get user winning results for popup
+        this.gameInstance.setRequest("GET_RESULT");
+        this.client.send(this.gameInstance);
 
-    	//update scoreboard
-    	this.initializeWinnings(player, playerWinnings);
+        try {
+            Object response = this.client.read();
+            if (response instanceof PokerInfo) {
+                this.gameInstance = (PokerInfo) response;
+            }
+        }
+        catch (Exception e) {
+            System.err.println("error updating gameInstance in GameController.completeGame() result gathering");
+        }
 
         this.displayWinningPopup();
-    }
-
-
-    // used for completeGame()
-    // compares and evaluates the cards and the winnings/losses for the players
-    private void evaluateTheWinnings() {
-    	//finds details on the cards so that they'll get compared and evaluated
-    	int playerWin = ThreeCardLogic.CompareHands(this.dealer.getDealersHand(), this.player.getHand());
-    	int playerPP = ThreeCardLogic.evalPPWinnings(this.player.getHand(), this.player.getPairPlusBet());
-
-		//if player lost pair plus bet, lose that money
-		if (playerPP == 0) {
-			playerPP = this.player.getPairPlusBet() * -1;
-		}
-
-    	//2 = player wins money, 1 = dealer takes the money, 0 = nothing, you get money returned
-		//for 2, it adds the antebet winnings, and gives the evaluated pair plus winnings (or loss)
-		//for player 1
-		if(this.player.getHasFolded() == false) {
-			//does the dealer qualify
-			if(this.dealer.getQualify() == false) {
-				this.player.setKeepAnte(true); //keep ante bet
-				this.player.setTotalWinnings(this.player.getTotalWinnings() + playerPP); //calculate pair plus evaluation
-			}
-			//if player wins
-			else if(playerWin == 2) {
-				this.player.setTotalWinnings(this.player.getTotalWinnings() + playerPP + (2 * this.player.getAnteBet()));
-			}
-			//if player loses
-			else if(playerWin == 1) {
-				this.player.setTotalWinnings(this.player.getTotalWinnings() + playerPP - (2 * this.player.getAnteBet()));
-			}
-		}
-		// fold
-		else {
-			this.player.setTotalWinnings(this.player.getTotalWinnings() - this.player.getPairPlusBet() - this.player.getAnteBet());
-		}
     }
 
 
     // restarts the game using the non-overloaded resetGame function (adding in main)
     private void startAgain() {
     	try {
-            this.resetGame(false, 1);
+            this.resetGame(false);
         }
         catch (Exception e) {
             System.err.println("resetGame() error!");
@@ -543,7 +498,7 @@ public class GameController implements Initializable {
         // based off of the controls for each player
         Stage stage1 = (Stage)this.playerButtonBox.getScene().getWindow();
 
-        Popup playerPopup = this.createPopup(this.player);
+        Popup playerPopup = this.createPopup();
 
         // to align the popup with the betting buttons
         Bounds playerBounds = this.playerButtonBox.localToScreen(this.playerButtonBox.getBoundsInLocal());
@@ -563,10 +518,10 @@ public class GameController implements Initializable {
 
     // constructs a popup with the desired text and returns it
     // mainly used as a helper function for this.displayWinningPopup()
-    private Popup createPopup(Player player) {
+    private Popup createPopup() {
         Popup popup = new Popup();
 
-        Label popupLabel = new Label(player.resultToString(this.dealer));
+        Label popupLabel = new Label(this.gameInstance.getResult());
         popupLabel.getStylesheets().add(getClass().getResource("styles/popup.css").toExternalForm());
 
         popup.getContent().add(popupLabel);
@@ -578,29 +533,17 @@ public class GameController implements Initializable {
     // deals cards out to the dealer and both players
     // sets 'dealersHand' data member and 'hand' data members
     private void dealCards() {
-        this.dealer.setDealersHand(this.dealer.dealHand());
-        this.player.setHand(this.dealer.dealHand());
-    }
+        this.gameInstance.setRequest("DEAL_CARDS");
+        this.client.send(this.gameInstance);
 
-
-    // flips cards for either a player or dealer, depending on input
-    // if flipping for the dealer, set player == null
-    // if flipping for a player, set dealer == null
-    private void flipCards(Dealer dealer, Player player, ArrayList<ImageView> cards) throws Exception {
-        ArrayList<Card> hand;
-        if (dealer != null) {
-            hand = dealer.getDealersHand();
+        try {
+            Object response = this.client.read();
+            if (response instanceof PokerInfo) {
+                this.gameInstance = (PokerInfo) response;
+            }
         }
-        else if (player != null) {
-            hand = player.getHand();
-        }
-        else {
-            throw new Exception("attempting to flip cards when both parameters are null");
-        }
-
-        for (int i = 0; i < hand.size(); i++) {
-            String filename = this.getCardFilename(hand.get(i));
-            this.setCardImage(cards.get(i), filename);
+        catch (Exception e) {
+            System.err.println("error updating gameInstance in GameController.dealCards()\n");
         }
     }
 
@@ -648,8 +591,8 @@ public class GameController implements Initializable {
 
     // folds hand and disables betting buttons for a single player
     // also performs visual updates (darkens cards)
-    private void fold(Player player, ArrayList<Button> betButtons, ArrayList<ImageView> cards) {
-        player.setHasFolded(true);
+    private void fold(ArrayList<Button> betButtons, ArrayList<ImageView> cards) {
+        this.gameInstance.setHasFolded(true);
 
         for (int i = 0; i < betButtons.size(); i++) {
             betButtons.get(i).setDisable(true);
@@ -668,26 +611,10 @@ public class GameController implements Initializable {
         }
     }
 
-
-    // checks if the dealer should flip their cards
-    // essentially checks if both players have folded OR placed a play bet
-    // returns true if they have, false otherwise
-    private boolean shouldDealerFlip() {
-        boolean playerDone = false;
-
-        if (player.getPlayBet() != 0 || player.getHasFolded()) {
-            playerDone = true;
-        }
-        this.dealer.setHasFlipped(playerDone);
-
-        return this.dealer.getHasFlipped();
-    }
-
-
     // initializes the winnings display in the top right for a single player
-    private void initializeWinnings(Player player, Label playerWinnings) {
-        playerWinnings.setText("$" + player.getTotalWinnings());
-        changeWinningsTextColor(player, playerWinnings);
+    private void initializeWinnings() {
+        this.playerWinnings.setText("$" + this.gameInstance.getTotalWinnings());
+        changeWinningsTextColor();
     }
 
 
@@ -751,7 +678,13 @@ public class GameController implements Initializable {
     // calls all functions needed to initialize player
     // lots of parameters would be needed to make a generic function
     // for both players, so i made an initialize function for each player
-    private void initializePlayer1() {
+    private void initializePlayer() {
+
+        // reset bets to default values
+        this.gameInstance.setAnte(5);
+        this.gameInstance.setPairPlus(0);
+        this.gameInstance.setPlay(0);
+
         // create playerCards so that images can be updated after flipping
         this.playerCards = new ArrayList<>(3);
 
@@ -787,9 +720,9 @@ public class GameController implements Initializable {
         this.playerFold.setDisable(true);
 
         // updates bet display
-        this.updateBetAmount(player, playerAnteBet, "ante");
-        this.updateBetAmount(player, playerPairPlusBet, "pair plus");
-        this.updateBetAmount(player, playerPlayBet, "play");
+        this.updateBetAmount(playerAnteBet, "ante");
+        this.updateBetAmount(playerPairPlusBet, "pair plus");
+        this.updateBetAmount(playerPlayBet, "play");
 
         // sets all card's images to the back side
         this.setCardImage(this.playerCard1, this.cardBackFileName);
@@ -801,7 +734,7 @@ public class GameController implements Initializable {
         // ante bet
         this.playerIncreaseAnteBet.setOnAction(event -> {
             try {
-                this.increaseBet(this.player, this.playerAnteBet, "ante", this.playerIncreaseAnteBet, this.playerDecreaseAnteBet, this.playerConfirmBets);
+                this.increaseBet(this.playerAnteBet, "ante");
             }
             catch (Exception e) {
                 System.err.println("player 1 ante bet update error!");
@@ -809,7 +742,7 @@ public class GameController implements Initializable {
         });
         this.playerDecreaseAnteBet.setOnAction(event -> {
             try {
-                this.decreaseBet(this.player, this.playerAnteBet, "ante", this.playerIncreaseAnteBet, this.playerDecreaseAnteBet);
+                this.decreaseBet(this.playerAnteBet, "ante");
             }
             catch (Exception e) {
                 System.err.println("player 1 ante bet update error!");
@@ -819,7 +752,7 @@ public class GameController implements Initializable {
         // pair plus bet
         this.playerIncreasePairPlusBet.setOnAction(event -> {
             try {
-                this.increaseBet(this.player, this.playerPairPlusBet, "pair plus", this.playerIncreasePairPlusBet, this.playerDecreasePairPlusBet, this.playerConfirmBets);
+                this.increaseBet(this.playerPairPlusBet, "pair plus");
             }
             catch (Exception e) {
                 System.err.println("player 1 pair plus bet update error!");
@@ -827,7 +760,7 @@ public class GameController implements Initializable {
         });
         this.playerDecreasePairPlusBet.setOnAction(event -> {
             try {
-                this.decreaseBet(this.player, this.playerPairPlusBet, "pair plus", this.playerIncreasePairPlusBet, this.playerDecreasePairPlusBet);
+                this.decreaseBet(this.playerPairPlusBet, "pair plus");
             }
             catch (Exception e) {
                 System.err.println("player 1 pair plus bet update error!");
@@ -837,14 +770,11 @@ public class GameController implements Initializable {
         // play bet
         this.playerIncreasePlayBet.setOnAction(event -> {
             try {
-                this.increaseBet(this.player, this.playerPlayBet, "play", this.playerIncreasePlayBet, null, this.playerConfirmBets);
+                this.increaseBet(this.playerPlayBet, "play");
                 this.playerFold.setDisable(true); // no longer able to fold after increasing play bet
 
-                // checks if game should complete
-                // (both players have folded or added a play bet)
-                if (this.shouldDealerFlip()) {
-                    this.completeGame();
-                }
+                // completes game
+                this.completeGame();
             }
             catch (Exception e) {
                 System.err.println("player 1 play bet update error!");
@@ -854,7 +784,7 @@ public class GameController implements Initializable {
         // confirm bets
         this.playerConfirmBets.setOnAction(event -> {
             try {
-                this.confirmBets(this.player, this.playerBetButtons);
+                this.confirmBets(this.playerBetButtons);
             }
             catch (Exception e) {
                 System.err.println("player 1 confirm bets error!");
@@ -864,13 +794,10 @@ public class GameController implements Initializable {
         // fold
         this.playerFold.setOnAction(event -> {
             try {
-                this.fold(this.player, this.playerBetButtons, this.playerCards);
+                this.fold(this.playerBetButtons, this.playerCards);
 
-                // checks if game should complete
-                // (both players have folded or added a play bet)
-                if (this.shouldDealerFlip()) {
-                    this.completeGame();
-                }
+                // completes game
+                this.completeGame();
             }
             catch (Exception e) {
                 System.err.println("player 1 fold error!");

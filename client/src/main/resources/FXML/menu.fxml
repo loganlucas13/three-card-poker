@@ -22,7 +22,7 @@
 
         <HBox alignment="CENTER" spacing="10">
             <Label styleClass="configLabel" text="IP:" minWidth="125"></Label>
-            <TextField fx:id="ipField" promptText="???" minWidth="245"></TextField>
+            <TextField fx:id="ipField" text="127.0.0.1" promptText="???" minWidth="245"></TextField>
             <Button fx:id="confirmIp" styleClass="networkButton" text="+" minWidth="25"></Button>
         </HBox>
         <HBox alignment="CENTER" spacing="10">
