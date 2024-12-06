@@ -6,8 +6,9 @@ import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
@@ -18,9 +19,10 @@ import javafx.scene.effect.ColorAdjust;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.stage.Popup;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -477,8 +479,68 @@ public class GameController implements Initializable {
         catch (Exception e) {
             System.err.println("error updating gameInstance in GameController.completeGame() result gathering");
         }
+        this.displayWinningScene();
+    }
 
-        this.displayWinningPopup();
+
+    // creates and displays winning screen after game is finished
+    private void displayWinningScene() {
+        // get current stage and scene
+        Stage stage = (Stage)this.playerButtonBox.getScene().getWindow();
+        Scene originalScene = stage.getScene();
+
+        // set up new scene
+        BorderPane winningPane = new BorderPane();
+        Scene winningScene = new Scene(winningPane, 1280, 1024);
+        winningScene.getStylesheets().add(getClass().getResource("/styles/globals.css").toExternalForm());
+        winningScene.getStylesheets().add(getClass().getResource("/styles/winnings.css").toExternalForm());
+
+        // stores all elements to be put in center
+        VBox elementGroup = new VBox(10);
+
+        // displays the result of the game
+        Label winningLabel = new Label(this.gameInstance.getResult());
+
+        // groups buttons side-by-side so they can be placed underneath the winning label
+        HBox buttonGroup = new HBox(10);
+        Button playButton = new Button("PLAY AGAIN?");
+        playButton.setId("playButton"); // for css styling
+
+        // event handler to restart game state and revert to original scene
+        playButton.setOnAction(event -> {
+            try {
+                this.startAgain();
+                stage.setScene(originalScene);
+            } catch (Exception e) {
+                System.err.println("error restarting game");
+            }
+        });
+
+        Button quitButton = new Button("QUIT GAME");
+        quitButton.setId("quitButton"); // for css styling
+        quitButton.setOnAction(event -> {
+            try {
+                stage.close();
+            } catch (Exception e) {
+                System.err.println("error quitting game");
+            }
+        });
+
+        // grouping elements together to display on scene
+        buttonGroup.getChildren().addAll(playButton, quitButton);
+        buttonGroup.setAlignment(Pos.CENTER);
+
+        elementGroup.getChildren().addAll(winningLabel, buttonGroup);
+        elementGroup.setAlignment(Pos.CENTER);
+
+        winningPane.setCenter(elementGroup);
+
+        // lets the player view the dealer's cards for 2 seconds before moving to the winning screen
+        PauseTransition pause = new PauseTransition(Duration.seconds(2));
+    	pause.setOnFinished(event -> {
+            stage.setScene(winningScene);
+        });
+    	pause.play();
     }
 
 
@@ -490,43 +552,6 @@ public class GameController implements Initializable {
         catch (Exception e) {
             System.err.println("resetGame() error!");
         }
-    }
-
-
-    // displays popups that show up after the game has ended
-    private void displayWinningPopup() {
-        // based off of the controls for each player
-        Stage stage1 = (Stage)this.playerButtonBox.getScene().getWindow();
-
-        Popup playerPopup = this.createPopup();
-
-        // to align the popup with the betting buttons
-        Bounds playerBounds = this.playerButtonBox.localToScreen(this.playerButtonBox.getBoundsInLocal());
-
-        playerPopup.show(stage1, playerBounds.getMinX()+2, playerBounds.getMinY()+2);
-
-        // pauses the game to allow the player to read popup text
-        PauseTransition pause = new PauseTransition(Duration.seconds(8));
-
-    	pause.setOnFinished(event -> {
-            playerPopup.hide();
-            startAgain();
-        });
-    	pause.play();
-    }
-
-
-    // constructs a popup with the desired text and returns it
-    // mainly used as a helper function for this.displayWinningPopup()
-    private Popup createPopup() {
-        Popup popup = new Popup();
-
-        Label popupLabel = new Label(this.gameInstance.getResult());
-        popupLabel.getStylesheets().add(getClass().getResource("styles/popup.css").toExternalForm());
-
-        popup.getContent().add(popupLabel);
-
-        return popup;
     }
 
 
