@@ -24,6 +24,14 @@ public class ServerController implements Initializable {
 
     private final int port = ServerInfo.getPort();
 
+    // setter and getter for client count label
+    public Label getClientCountLabel() {
+        return this.clientCount;
+    }
+    public void setClientCountLabel(Label clientCount) {
+        this.clientCount = clientCount;
+    }
+
 
     // starts the server at specified port
     void startServer(int port) throws Exception {
@@ -48,6 +56,7 @@ public class ServerController implements Initializable {
         this.portDisplay.setText(Integer.toString(this.port));
         this.startServerButton.setDisable(true);
         this.closeServerButton.setDisable(false);
+        this.setClientCountLabel(this.clientCount);
     }
 
 

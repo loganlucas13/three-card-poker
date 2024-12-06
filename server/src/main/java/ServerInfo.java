@@ -1,4 +1,6 @@
 
+
+
 public class ServerInfo {
 
     // purpose of this class is to hold the data needed for server operations
@@ -8,8 +10,11 @@ public class ServerInfo {
     // data members
     private static String ip;
     private static int port;
+    private static int clientCount;
     private static boolean isRunning;
     private static Server server;
+    private static StartController startController;
+    private static ServerController serverController;
 
     // getters and setters
 
@@ -29,6 +34,14 @@ public class ServerInfo {
         ServerInfo.port = port;
     }
 
+    // clientCount
+    public static int getClientCount() {
+        return ServerInfo.clientCount;
+    }
+    public static void setClientCount(int clientCount) {
+        ServerInfo.clientCount = clientCount;
+    }
+
     // isRunning
     public static boolean getIsRunning() {
         return ServerInfo.isRunning;
@@ -43,5 +56,21 @@ public class ServerInfo {
     }
     public static void setServer(Server server) {
         ServerInfo.server = server;
+    }
+
+    // start controller
+    public static StartController getStartController() {
+        return ServerInfo.startController;
+    }
+    public static void setStartController(StartController startController) {
+        ServerInfo.startController = startController;
+    }
+
+    // server controller
+    public static ServerController getServerController() {
+        return ServerInfo.serverController;
+    }
+    public static void setServerController(ServerController serverController) {
+        ServerInfo.serverController = serverController;
     }
 }

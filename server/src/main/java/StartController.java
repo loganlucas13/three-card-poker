@@ -26,7 +26,10 @@ public class StartController implements Initializable {
 
     // switches scene to main server display
     void goToServerScene() throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("FXML/server.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("FXML/server.fxml"));
+        Parent root = loader.load();
+        ServerInfo.setStartController(this);
+        ServerInfo.setServerController(loader.getController());
         Scene scene = new Scene(root, 1280, 1024);
         Stage primaryStage = (Stage)this.startServerButton.getScene().getWindow();
 

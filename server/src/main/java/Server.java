@@ -4,6 +4,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 
+import javafx.application.Platform;
+
 
 public class Server {
 
@@ -24,7 +26,6 @@ public class Server {
 
 
 	public class TheServer extends Thread {
-
 		public void run() {
 			try (ServerSocket socket = new ServerSocket(ServerInfo.getPort());) {
 				System.out.println("Server is waiting for a client!");
@@ -32,6 +33,9 @@ public class Server {
 
 				while (true) {
 					ClientThread c = new ClientThread(socket.accept(), increase());
+					Platform.runLater(() -> {
+						ServerInfo.getServerController().getClientCountLabel().setText(Integer.toString(count));
+					});
 					System.out.println("client has connected to server: " + "client #" + count);
 					synchronized(clients) {
 						clients.add(c);
