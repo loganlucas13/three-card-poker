@@ -5,6 +5,8 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 import javafx.application.Platform;
+import java.io.IOException;
+
 
 
 public class Server {
@@ -13,6 +15,7 @@ public class Server {
 	int serverCount = 0;
 	ArrayList<ClientThread> clients = new ArrayList<>();
 	TheServer server;
+	boolean run = true;
 
 	synchronized int getNextID() {
 		serverCount++;
@@ -32,31 +35,66 @@ public class Server {
 		this.server.start();
 	}
 
-
+    public void stopServer() {
+        run = false; // Stop the server loop
+        if (server != null && !server.isInterrupted()) {
+            server.interrupt(); // Interrupt the server thread
+        }
+        synchronized (clients) {
+        	for(ClientThread client:clients) {
+        		try {
+        			client.connection.close();
+        		} catch (IOException e) {
+        			System.err.println("Error closing clients" + e.getMessage());
+        		}
+        	}
+        	clients.clear();
+        	serverCount =1;
+        	count = 1;
+			ServerInfo.getServerController().getEventList().getItems().add("CLOSED ALL CLIENT CONNECTIONS");
+        }
+    }
+    
+    public void startServer() {
+    	run = true;
+        ServerInfo.getServerController().getEventList().getItems().add("REOPENED SERVER (it didn't yet)");
+        
+    }
+    
 	public class TheServer extends Thread {
 		public void run() {
 			try (ServerSocket socket = new ServerSocket(ServerInfo.getPort());) {
 				System.out.println("Server is waiting for a client!");
-
-
-				while (true) {
-					int clientID = getNextID();
-					ClientThread c = new ClientThread(socket.accept(), clientID);
-					synchronized(clients) {
-						clients.add(c);
-					}
-					Platform.runLater(() -> {
-						ServerInfo.getServerController().getClientCountLabel().setText(Integer.toString(serverCount));
-						ServerInfo.getServerController().getEventList().getItems().add("CLIENT HAS CONNECTED TO SERVER: CLIENT #" + clientID);
-					});
-					System.out.println("client has connected to server: " + "client #" + clientID);
-					c.start();
-				}
-			}//end of try
-			catch(Exception e) {
-				System.err.println("server did not launch");
-				System.err.println(e);
-			}
+                while (run) { // Use the running flag to control the loop
+                    try {
+                        int clientID = getNextID();
+                        ClientThread c = new ClientThread(socket.accept(), clientID);
+                        synchronized (clients) {
+                            clients.add(c);
+                        }
+                        Platform.runLater(() -> {
+                            ServerInfo.getServerController().getClientCountLabel().setText(Integer.toString(serverCount));
+                            ServerInfo.getServerController().getEventList().getItems().add("CLIENT HAS CONNECTED TO SERVER: CLIENT #" + clientID);
+                        });
+                        System.out.println("Client has connected to server: client #" + clientID);
+                        c.start();
+                    } catch (IOException e) {
+                        if (!run) {
+                            System.out.println("Server has been stopped.");
+                            break;
+                        } else {
+                            System.err.println("Error accepting client connection: " + e.getMessage());
+                        }
+                    }
+                }
+                System.out.println("Server has shut down.");
+            } catch (IOException e) {
+                System.err.println("Error with ServerSocket: " + e.getMessage());
+            } finally {
+                Platform.runLater(() -> {
+                    ServerInfo.getServerController().getEventList().getItems().add("SERVER CLOSED");
+                });
+            }
 		}//end of while
 	}
 

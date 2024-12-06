@@ -8,6 +8,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 
+import javafx.application.Platform;
+
+
 public class ServerController implements Initializable {
     @FXML
     private ListView eventList;
@@ -41,17 +44,23 @@ public class ServerController implements Initializable {
     void startServer(int port) throws Exception {
         ServerInfo.getServer().server.start(); // because we have nested server classes
         ServerInfo.setIsRunning(true);
-        this.startServerButton.setDisable(true);
-        this.closeServerButton.setDisable(false);
+        Platform.runLater(() -> {
+            this.startServerButton.setDisable(true);
+            this.closeServerButton.setDisable(false);
+            this.eventList.getItems().add("OPENED SERVER");
+        });
     }
 
 
     // closes the server at specified port
     void closeServer(int port) throws Exception {
-        ServerInfo.getServer().server.interrupt();
+        ServerInfo.getServer().stopServer();
         ServerInfo.setIsRunning(false);
-        this.startServerButton.setDisable(false);
-        this.closeServerButton.setDisable(true);
+        Platform.runLater(() -> {
+            this.startServerButton.setDisable(false);
+            this.closeServerButton.setDisable(true);
+            this.eventList.getItems().add("CLOSED SERVER");
+        });
     }
 
 
