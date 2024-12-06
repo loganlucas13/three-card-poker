@@ -72,11 +72,6 @@ public class Server {
 
 		this.server = new TheServer();
 		this.server.start();
-
-		Platform.runLater(() -> {
-			ServerInfo.getServerController().getEventList().getItems().add("REOPENED SERVER");
-		});
-
     }
 
 
@@ -153,7 +148,7 @@ public class Server {
 
 					if (request.equals("DEAL_CARDS")) {
 						Platform.runLater(() -> {
-							ServerInfo.getServerController().getEventList().getItems().add("CLIENT #" + clientID + " IS STARTING A GAME");
+							ServerInfo.getServerController().getEventList().getItems().add("CLIENT #" + clientID + " IS STARTING THEIR GAME");
 							ServerInfo.getServerController().getEventList().getItems().add("DEALING CARDS TO CLIENT #" + clientID);
 						});
 						player.setHand(dealer.dealHand());
@@ -174,6 +169,16 @@ public class Server {
 						gameInstance.setDealerHandString(dealer.handToString());
 						gameInstance.setWillPushAnte(false);
 						gameInstance.setShowPlayer(true); // we want to show the player's cards after dealing
+
+						Platform.runLater(() -> {
+							ServerInfo.getServerController().getEventList().getItems().add("CLIENT #" + clientID + " PLACED ANTE BET OF $" + player.getAnteBet());
+							if (player.getPairPlusBet() == 0) {
+								ServerInfo.getServerController().getEventList().getItems().add("CLIENT #" + clientID + " DID NOT PLACE PAIR PLUS BET");
+							}
+							else {
+								ServerInfo.getServerController().getEventList().getItems().add("CLIENT #" + clientID + " PLACED PAIR PLUS BET OF $" + player.getPairPlusBet());
+							}
+						});
 
 						try {
 							out.writeObject(gameInstance);
@@ -210,16 +215,15 @@ public class Server {
 						}
 					}
 					else if (request.equals("EVALUATE_WINNINGS")) {
-						Platform.runLater(() -> {
-							ServerInfo.getServerController().getEventList().getItems().add("EVALUATING WINNINGS FOR CLIENT #" + clientID);
-						});
 						player.setHasFolded(gameInstance.getHasFolded());
+						gameInstance.setRoundWinnings(0);
 
 						if (gameInstance.getHasFolded()) {
 							Platform.runLater(() -> {
 								ServerInfo.getServerController().getEventList().getItems().add("CLIENT #" + clientID + " FOLDED");
 							});
 							player.setTotalWinnings(player.getTotalWinnings() - player.getPairPlusBet() - player.getAnteBet());
+							gameInstance.setRoundWinnings((player.getPairPlusBet() + player.getAnteBet()) * -1);
 							gameInstance.setWillPushAnte(false); // prevent user from pushing ante after folding
 						}
 						else {
@@ -236,12 +240,12 @@ public class Server {
 										ServerInfo.getServerController().getEventList().getItems().add("CLIENT #" + clientID + " LOST PAIR PLUS BET");
 									});
 								}
-								else {
-									Platform.runLater(() -> {
-										ServerInfo.getServerController().getEventList().getItems().add("CLIENT #" + clientID + " DID NOT PLACE PAIR PLUS BET");
-									});
-								}
 								pairPlusResult = player.getPairPlusBet() * -1;
+							}
+							else {
+								Platform.runLater(() -> {
+									ServerInfo.getServerController().getEventList().getItems().add("CLIENT #" + clientID + " WON PAIR PLUS BET");
+								});
 							}
 
 							if (!dealer.getQualify()) {
@@ -250,6 +254,7 @@ public class Server {
 								Platform.runLater(() -> {
 									ServerInfo.getServerController().getEventList().getItems().add("PUSHING CLIENT #" + clientID + "'S ANTE TO NEXT ROUND");
 								});
+								gameInstance.setRoundWinnings(pairPlusResult);
 							}
 							else if (gameResult == 2) {
 								// player wins
@@ -257,6 +262,7 @@ public class Server {
 									ServerInfo.getServerController().getEventList().getItems().add("CLIENT #" + clientID + " WON ANTE BET");
 								});
 								player.setTotalWinnings(player.getTotalWinnings() + pairPlusResult + (2 * player.getAnteBet()));
+								gameInstance.setRoundWinnings(pairPlusResult + (2 * player.getAnteBet()));
 							}
 							else if (gameResult == 1) {
 								// player loses
@@ -264,9 +270,19 @@ public class Server {
 									ServerInfo.getServerController().getEventList().getItems().add("CLIENT #" + clientID + " LOST ANTE BET");
 								});
 								player.setTotalWinnings(player.getTotalWinnings() + pairPlusResult - (2 * player.getAnteBet()));
+								gameInstance.setRoundWinnings(pairPlusResult - (2 * player.getAnteBet()));
 							}
 						}
 						gameInstance.setTotalWinnings(player.getTotalWinnings());
+
+						Platform.runLater(() -> {
+							if (gameInstance.getRoundWinnings() < 0) {
+								ServerInfo.getServerController().getEventList().getItems().add("CLIENT #" + clientID + " LOST $" + Math.abs(gameInstance.getRoundWinnings()) + " THIS ROUND");
+							}
+							else {
+								ServerInfo.getServerController().getEventList().getItems().add("CLIENT #" + clientID + " WON $" + gameInstance.getRoundWinnings() + " THIS ROUND");
+							}
+						});
 
 						try {
 							out.writeObject(gameInstance);
@@ -276,11 +292,16 @@ public class Server {
 						}
 					}
 					else if (request.equals("GET_RESULT")) {
-						Platform.runLater(() -> {
-							ServerInfo.getServerController().getEventList().getItems().add("GATHERING GAME-END RESULTS FOR CLIENT #" + clientID);
-						});
+						String result = player.resultToString(dealer) + "\n\n";
 
-						gameInstance.setResult(player.resultToString(dealer));
+						if (gameInstance.getRoundWinnings() < 0) {
+							result += "YOU LOST $" + Math.abs(gameInstance.getRoundWinnings()) + " THIS ROUND";
+						}
+						else {
+							result += "YOU WON $" + gameInstance.getRoundWinnings() + " THIS ROUND";
+						}
+
+						gameInstance.setResult(result);
 
 						try {
 							out.writeObject(gameInstance);
@@ -288,6 +309,11 @@ public class Server {
 						catch (Exception e) {
 							System.err.println("GET_RESULT response error");
 						}
+					}
+					else if (request.equals("CONTINUE_GAME")) {
+						Platform.runLater(() -> {
+							ServerInfo.getServerController().getEventList().getItems().add("CLIENT #" + clientID + " IS PLAYING ANOTHER ROUND");
+						});
 					}
 				}
 				catch (Exception e) {

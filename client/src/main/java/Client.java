@@ -18,8 +18,6 @@ public class Client extends Thread{
 			int port = PokerInfoSingleton.getInstance().getPort();
 
 			clientSocket = new Socket(ip, port);
-			System.out.println("socket opened at ip: " + ip);
-			System.out.println("socket opened at port: " + port);
 
 			out = new ObjectOutputStream(clientSocket.getOutputStream());
 			in = new ObjectInputStream(clientSocket.getInputStream());

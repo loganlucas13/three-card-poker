@@ -547,6 +547,8 @@ public class GameController implements Initializable {
     // restarts the game using the non-overloaded resetGame function (adding in main)
     private void startAgain() {
     	try {
+            this.gameInstance.setRequest("CONTINUE_GAME");
+            this.client.send(this.gameInstance);
             this.resetGame(false);
         }
         catch (Exception e) {

@@ -11,6 +11,7 @@ public class PokerInfo implements Serializable {
     private int pairPlus;
     private int play;
     private int totalWinnings;
+    private int roundWinnings;
     private ArrayList<Card> dealerHand;
     private ArrayList<Card> playerHand;
     private String dealerHandString;
@@ -100,6 +101,14 @@ public class PokerInfo implements Serializable {
     }
     public void setTotalWinnings(int totalWinnings) {
     	this.totalWinnings = totalWinnings;
+    }
+
+    // round winnings
+    public int getRoundWinnings() {
+        return this.roundWinnings;
+    }
+    public void setRoundWinnings(int roundWinnings) {
+        this.roundWinnings = roundWinnings;
     }
 
     // dealer's hand
