@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
@@ -5,29 +6,22 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 import javafx.application.Platform;
-import java.io.IOException;
 
 
 
 public class Server {
 
-	int count = 0;
-	int serverCount = 0;
 	ArrayList<ClientThread> clients = new ArrayList<>();
 	TheServer server;
-	boolean run = true;
+	boolean isRunning = true;
+	ServerSocket serverSocket;
 
 	synchronized int getNextID() {
-		serverCount++;
-	    return ++count;
+	    return clients.size() + 1;
 	}
-	
-	synchronized void decreaseServerCount() {
-		serverCount--;
-	}
-	
+
 	public synchronized int getServerCount() {
-	    return serverCount;
+	    return clients.size();
 	}
 
 	Server() {
@@ -35,37 +29,65 @@ public class Server {
 		this.server.start();
 	}
 
+
+	// closes all current connections and prevents server from accepting new connections
     public void stopServer() {
-        run = false; // Stop the server loop
+        this.isRunning = false; // Stop the server loop
         if (server != null && !server.isInterrupted()) {
             server.interrupt(); // Interrupt the server thread
         }
+
+		// closes server socket to prevent new connections from being made
+		try {
+			if (this.serverSocket != null && !serverSocket.isClosed()) {
+				serverSocket.close();
+			}
+		}
+		catch (Exception e) {
+			System.err.println("Error while closing server socket");
+		}
+
+
+		// closes all current client connections
         synchronized (clients) {
-        	for(ClientThread client:clients) {
+        	for(ClientThread client : clients) {
         		try {
         			client.connection.close();
-        		} catch (IOException e) {
+        		}
+				catch (IOException e) {
         			System.err.println("Error closing clients" + e.getMessage());
         		}
         	}
         	clients.clear();
-        	serverCount =1;
-        	count = 1;
-			ServerInfo.getServerController().getEventList().getItems().add("CLOSED ALL CLIENT CONNECTIONS");
+			Platform.runLater(() -> {
+				ServerInfo.getServerController().getEventList().getItems().add("CLOSED ALL CURRENT CLIENT CONNECTIONS");
+			});
         }
     }
-    
-    public void startServer() {
-    	run = true;
-        ServerInfo.getServerController().getEventList().getItems().add("REOPENED SERVER (it didn't yet)");
-        
+
+
+	// restarts server completely, allowing new connections if server was previously closed
+    public void restartServer() {
+    	this.isRunning = true;
+
+		this.server = new TheServer();
+		this.server.start();
+
+		Platform.runLater(() -> {
+			ServerInfo.getServerController().getEventList().getItems().add("REOPENED SERVER");
+		});
+
     }
-    
+
+
 	public class TheServer extends Thread {
+		@Override
 		public void run() {
 			try (ServerSocket socket = new ServerSocket(ServerInfo.getPort());) {
-				System.out.println("Server is waiting for a client!");
-                while (run) { // Use the running flag to control the loop
+				serverSocket = socket; // update member in 'Server' class
+
+				// continuously accepts new connections and adds them to client list while server is running
+                while (isRunning) {
                     try {
                         int clientID = getNextID();
                         ClientThread c = new ClientThread(socket.accept(), clientID);
@@ -73,19 +95,18 @@ public class Server {
                             clients.add(c);
                         }
                         Platform.runLater(() -> {
-                            ServerInfo.getServerController().getClientCountLabel().setText(Integer.toString(serverCount));
+                            ServerInfo.getServerController().getClientCountLabel().setText(Integer.toString(getServerCount()));
                             ServerInfo.getServerController().getEventList().getItems().add("CLIENT HAS CONNECTED TO SERVER: CLIENT #" + clientID);
                         });
-                        System.out.println("Client has connected to server: client #" + clientID);
                         c.start();
                     } catch (IOException e) {
-                        if (!run) {
-                            System.out.println("Server has been stopped.");
+                        if (!isRunning) {
                             break;
-                        } else {
-                            System.err.println("Error accepting client connection: " + e.getMessage());
                         }
-                    }
+						else {
+							System.err.println("Error accepting new client connection");
+                        }
+					}
                 }
                 System.out.println("Server has shut down.");
             } catch (IOException e) {
@@ -110,59 +131,6 @@ public class Server {
 			this.clientID = clientID;
 		}
 
-		public synchronized void updateClients(String message) {
-			for(int i = 0; i < clients.size(); i++) {
-				ClientThread t = clients.get(i);
-				if (message.equals("Join")) {
-					try {
-						t.out.writeObject(message);
-					}
-					catch(Exception e) {}
-				}
-				else if (message.equals("Quit")) {
-					try {
-
-						t.out.writeObject(message);
-					}
-					catch(Exception e) {}
-				}
-				else if (message.equals("Fold")) {
-					try {
-
-						t.out.writeObject(message);
-					}
-					catch (Exception e) {}
-				}
-				else if (message.equals("Play")) {
-					try {
-
-						t.out.writeObject(message);
-					}
-					catch (Exception e) {}
-				}
-				else if (message.equals("PairPlus")) {
-					try {
-
-						t.out.writeObject(message);
-					}
-					catch (Exception e) {}
-				}
-				else if (message.equals("Ante")) {
-					try {
-
-						t.out.writeObject(message);
-					}
-					catch (Exception e) {}
-				}
-				else if(message.equals("FreshStart")) {
-					try {
-
-						t.out.writeObject(message);
-					}
-					catch (Exception e) {}
-				}
-			}
-		}
 
 		@Override
 		public void run() {
@@ -172,10 +140,8 @@ public class Server {
 				connection.setTcpNoDelay(true);
 			}
 			catch(Exception e) {
-				System.out.println("stream not open");
+				System.err.println("Client thread streams not opened");
 			}
-
-			updateClients("new client on server: client #" + count);
 
 			Dealer dealer = new Dealer();
 			Player player = new Player();
@@ -185,10 +151,11 @@ public class Server {
 					PokerInfo gameInstance = (PokerInfo) in.readObject();
 					String request = gameInstance.getRequest();
 
-					updateClients("client #" + clientID + " said: " + request);
-
 					if (request.equals("DEAL_CARDS")) {
-						System.out.println("dealing cards to client #" + clientID);
+						Platform.runLater(() -> {
+							ServerInfo.getServerController().getEventList().getItems().add("CLIENT #" + clientID + " IS STARTING A GAME");
+							ServerInfo.getServerController().getEventList().getItems().add("DEALING CARDS TO CLIENT #" + clientID);
+						});
 						player.setHand(dealer.dealHand());
 						player.setAnteBet(gameInstance.getAnte());
 						player.setPlayBet(gameInstance.getPlay());
@@ -216,8 +183,9 @@ public class Server {
 						}
 					}
 					else if (request.equals("CHECK_DEALER_QUALIFICATION")) {
-						System.out.println("checking dealer qualification for client #" + clientID);
-
+						Platform.runLater(() -> {
+							ServerInfo.getServerController().getEventList().getItems().add("CHECKING DEALER QUALIFICATION FOR CLIENT #" + clientID);
+						});
 						gameInstance.setShowDealer(true);
 
 						// prepares response for client
@@ -242,33 +210,59 @@ public class Server {
 						}
 					}
 					else if (request.equals("EVALUATE_WINNINGS")) {
-						System.out.println("evaluating winnings for client #" + clientID);
-
+						Platform.runLater(() -> {
+							ServerInfo.getServerController().getEventList().getItems().add("EVALUATING WINNINGS FOR CLIENT #" + clientID);
+						});
 						player.setHasFolded(gameInstance.getHasFolded());
 
 						if (gameInstance.getHasFolded()) {
+							Platform.runLater(() -> {
+								ServerInfo.getServerController().getEventList().getItems().add("CLIENT #" + clientID + " FOLDED");
+							});
 							player.setTotalWinnings(player.getTotalWinnings() - player.getPairPlusBet() - player.getAnteBet());
 							gameInstance.setWillPushAnte(false); // prevent user from pushing ante after folding
 						}
 						else {
+							Platform.runLater(() -> {
+								ServerInfo.getServerController().getEventList().getItems().add("CLIENT #" + clientID + " PLACED PLAY BET");
+							});
 							int gameResult = ThreeCardLogic.CompareHands(dealer.getDealersHand(), player.getHand());
 							int pairPlusResult = ThreeCardLogic.evalPPWinnings(player.getHand(), player.getPairPlusBet());
 
 							// if player lost the pair plus bet, subtract wager from total winnings
 							if (pairPlusResult == 0) {
+								if (player.getPairPlusBet() > 0) {
+									Platform.runLater(() -> {
+										ServerInfo.getServerController().getEventList().getItems().add("CLIENT #" + clientID + " LOST PAIR PLUS BET");
+									});
+								}
+								else {
+									Platform.runLater(() -> {
+										ServerInfo.getServerController().getEventList().getItems().add("CLIENT #" + clientID + " DID NOT PLACE PAIR PLUS BET");
+									});
+								}
 								pairPlusResult = player.getPairPlusBet() * -1;
 							}
 
 							if (!dealer.getQualify()) {
 								player.setKeepAnte(true);
 								player.setTotalWinnings(player.getTotalWinnings() + pairPlusResult);
+								Platform.runLater(() -> {
+									ServerInfo.getServerController().getEventList().getItems().add("PUSHING CLIENT #" + clientID + "'S ANTE TO NEXT ROUND");
+								});
 							}
 							else if (gameResult == 2) {
 								// player wins
+								Platform.runLater(() -> {
+									ServerInfo.getServerController().getEventList().getItems().add("CLIENT #" + clientID + " WON ANTE BET");
+								});
 								player.setTotalWinnings(player.getTotalWinnings() + pairPlusResult + (2 * player.getAnteBet()));
 							}
 							else if (gameResult == 1) {
 								// player loses
+								Platform.runLater(() -> {
+									ServerInfo.getServerController().getEventList().getItems().add("CLIENT #" + clientID + " LOST ANTE BET");
+								});
 								player.setTotalWinnings(player.getTotalWinnings() + pairPlusResult - (2 * player.getAnteBet()));
 							}
 						}
@@ -282,7 +276,9 @@ public class Server {
 						}
 					}
 					else if (request.equals("GET_RESULT")) {
-						System.out.println("gathering game-end results for client #" + clientID);
+						Platform.runLater(() -> {
+							ServerInfo.getServerController().getEventList().getItems().add("GATHERING GAME-END RESULTS FOR CLIENT #" + clientID);
+						});
 
 						gameInstance.setResult(player.resultToString(dealer));
 
@@ -295,15 +291,12 @@ public class Server {
 					}
 				}
 				catch (Exception e) {
-					System.out.println(clientID + "....closing down!");
 					synchronized(clients) {
 						clients.remove(this);
-						decreaseServerCount();
 					}
-					updateClients("Client #" + clientID + " has left the server!");
 					Platform.runLater(() -> {
 						ServerInfo.getServerController().getClientCountLabel().setText(Integer.toString(getServerCount()));
-						ServerInfo.getServerController().getEventList().getItems().add("CLIENT HAS EXITED THE SERVER: CLIENT #" + clientID);
+						ServerInfo.getServerController().getEventList().getItems().add("CLIENT #" + clientID + " HAS LEFT THE SERVER");
 					});
 
 					break;

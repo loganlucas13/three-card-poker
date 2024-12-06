@@ -89,6 +89,7 @@ public class MenuController implements Initializable {
         }
     }
 
+
     // fills text fields for ip and port and allows user to start game
     private void enablePlay() {
         this.ipField.setText(this.gameInstance.getIp());
@@ -151,7 +152,6 @@ public class MenuController implements Initializable {
             try {
                 int port = Integer.parseInt(this.portField.getText()); // casts user text as integer
                 this.updatePort(port);
-                System.out.println(port);
             }
             catch (Exception e) {
                 System.err.println("updatePort() error!\n");
