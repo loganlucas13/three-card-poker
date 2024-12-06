@@ -10,13 +10,21 @@ import javafx.application.Platform;
 public class Server {
 
 	int count = 0;
+	int serverCount = 0;
 	ArrayList<ClientThread> clients = new ArrayList<>();
 	TheServer server;
 
-	synchronized int increase() {
-	    int current = count;
-	    count++;
-	    return current;
+	synchronized int getNextID() {
+		serverCount++;
+	    return ++count;
+	}
+	
+	synchronized void decreaseServerCount() {
+		serverCount--;
+	}
+	
+	public synchronized int getServerCount() {
+	    return serverCount;
 	}
 
 	Server() {
@@ -32,14 +40,16 @@ public class Server {
 
 
 				while (true) {
-					ClientThread c = new ClientThread(socket.accept(), increase());
-					Platform.runLater(() -> {
-						ServerInfo.getServerController().getClientCountLabel().setText(Integer.toString(count));
-					});
-					System.out.println("client has connected to server: " + "client #" + count);
+					int clientID = getNextID();
+					ClientThread c = new ClientThread(socket.accept(), clientID);
 					synchronized(clients) {
 						clients.add(c);
 					}
+					Platform.runLater(() -> {
+						ServerInfo.getServerController().getClientCountLabel().setText(Integer.toString(serverCount));
+						ServerInfo.getServerController().getEventList().getItems().add("CLIENT HAS CONNECTED TO SERVER: CLIENT #" + clientID);
+					});
+					System.out.println("client has connected to server: " + "client #" + clientID);
 					c.start();
 				}
 			}//end of try
@@ -53,13 +63,13 @@ public class Server {
 
 	class ClientThread extends Thread {
 		Socket connection;
-		int count;
+		int clientID;
 		ObjectInputStream in;
 		ObjectOutputStream out;
 
-		ClientThread(Socket s, int count) {
+		ClientThread(Socket s, int clientID) {
 			this.connection = s;
-			this.count = count;
+			this.clientID = clientID;
 		}
 
 		public synchronized void updateClients(String message) {
@@ -137,10 +147,10 @@ public class Server {
 					PokerInfo gameInstance = (PokerInfo) in.readObject();
 					String request = gameInstance.getRequest();
 
-					updateClients("client #" + count + " said: " + request);
+					updateClients("client #" + clientID + " said: " + request);
 
 					if (request.equals("DEAL_CARDS")) {
-						System.out.println("dealing cards to client #" + count);
+						System.out.println("dealing cards to client #" + clientID);
 						player.setHand(dealer.dealHand());
 						player.setAnteBet(gameInstance.getAnte());
 						player.setPlayBet(gameInstance.getPlay());
@@ -168,7 +178,7 @@ public class Server {
 						}
 					}
 					else if (request.equals("CHECK_DEALER_QUALIFICATION")) {
-						System.out.println("checking dealer qualification for client #" + count);
+						System.out.println("checking dealer qualification for client #" + clientID);
 
 						gameInstance.setShowDealer(true);
 
@@ -194,7 +204,7 @@ public class Server {
 						}
 					}
 					else if (request.equals("EVALUATE_WINNINGS")) {
-						System.out.println("evaluating winnings for client #" + count);
+						System.out.println("evaluating winnings for client #" + clientID);
 
 						player.setHasFolded(gameInstance.getHasFolded());
 
@@ -234,7 +244,7 @@ public class Server {
 						}
 					}
 					else if (request.equals("GET_RESULT")) {
-						System.out.println("gathering game-end results for client #" + count);
+						System.out.println("gathering game-end results for client #" + clientID);
 
 						gameInstance.setResult(player.resultToString(dealer));
 
@@ -247,11 +257,17 @@ public class Server {
 					}
 				}
 				catch (Exception e) {
-					System.out.println("OOOOPs...Something wrong with the socket from client: " + count + "....closing down!");
-					updateClients("Client #" + count + " has left the server!");
+					System.out.println(clientID + "....closing down!");
 					synchronized(clients) {
 						clients.remove(this);
+						decreaseServerCount();
 					}
+					updateClients("Client #" + clientID + " has left the server!");
+					Platform.runLater(() -> {
+						ServerInfo.getServerController().getClientCountLabel().setText(Integer.toString(getServerCount()));
+						ServerInfo.getServerController().getEventList().getItems().add("CLIENT HAS EXITED THE SERVER: CLIENT #" + clientID);
+					});
+
 					break;
 				}
 			}

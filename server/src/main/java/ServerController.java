@@ -24,6 +24,7 @@ public class ServerController implements Initializable {
 
     private final int port = ServerInfo.getPort();
 
+    
     // setter and getter for client count label
     public Label getClientCountLabel() {
         return this.clientCount;
@@ -32,6 +33,9 @@ public class ServerController implements Initializable {
         this.clientCount = clientCount;
     }
 
+    public ListView getEventList() {
+    	return this.eventList;
+    }
 
     // starts the server at specified port
     void startServer(int port) throws Exception {
@@ -63,7 +67,7 @@ public class ServerController implements Initializable {
     // initializes all event handlers
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        this.eventList.getItems().add("PLAYER JOINED"); // TEMPORARY
+        this.eventList.getItems().add("SERVER STARTED"); // TEMPORARY
 
         this.initializeLabelsAndButtons();
 
