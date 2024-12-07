@@ -13,6 +13,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.effect.ColorAdjust;
@@ -111,6 +112,7 @@ public class GameController implements Initializable {
 
 
     // event handler for exit button
+    // creates popup if user tries to exit game
     private void quitGame() throws Exception {
         Alert alert = new Alert(AlertType.CONFIRMATION, "ARE YOU SURE YOU WANT TO EXIT?");
         alert.setTitle("Exit Confirmation");
@@ -434,6 +436,21 @@ public class GameController implements Initializable {
             if (response instanceof PokerInfo) {
                 this.gameInstance = (PokerInfo) response;
             }
+            else {
+                // creates popup if the server doesn't respond with an object of type PokerInfo
+                Platform.runLater(() -> {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("UNABLE TO CHECK DEALER QUALIFICATION");
+                    alert.setHeaderText("CONNECTION TO SERVER LOST.");
+                    alert.setContentText("MAKE SURE THAT THE SERVER IS RUNNING, THEN TRY AGAIN.\n\nCLOSING THIS POPUP WILL TERMINATE THE PROGRAM");
+
+                    DialogPane dialogPane = alert.getDialogPane();
+                    dialogPane.getStylesheets().add(getClass().getResource("styles/alert.css").toExternalForm());
+
+                    alert.showAndWait();
+                    Platform.exit();
+                });
+            }
         }
         catch (Exception e) {
             System.err.println("error updating gameInstance in GameController.completeGame() dealer qualification");
@@ -459,6 +476,21 @@ public class GameController implements Initializable {
             if (response instanceof PokerInfo) {
                 this.gameInstance = (PokerInfo) response;
             }
+            else {
+                // creates popup if the server doesn't respond with an object of type PokerInfo
+                Platform.runLater(() -> {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("UNABLE TO EVALUATE WINNINGS");
+                    alert.setHeaderText("CONNECTION TO SERVER LOST.");
+                    alert.setContentText("MAKE SURE THAT THE SERVER IS RUNNING, THEN TRY AGAIN.\n\nCLOSING THIS POPUP WILL TERMINATE THE PROGRAM");
+
+                    DialogPane dialogPane = alert.getDialogPane();
+                    dialogPane.getStylesheets().add(getClass().getResource("styles/alert.css").toExternalForm());
+
+                    alert.showAndWait();
+                    Platform.exit();
+                });
+            }
         }
         catch (Exception e) {
             System.err.println("error updating gameInstance in GameController.completeGame() winnings evaluation");
@@ -474,6 +506,21 @@ public class GameController implements Initializable {
             Object response = this.client.read();
             if (response instanceof PokerInfo) {
                 this.gameInstance = (PokerInfo) response;
+            }
+            else {
+                // creates popup if the server doesn't respond with an object of type PokerInfo
+                Platform.runLater(() -> {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("UNABLE TO GATHER RESULTS");
+                    alert.setHeaderText("CONNECTION TO SERVER LOST.");
+                    alert.setContentText("MAKE SURE THAT THE SERVER IS RUNNING, THEN TRY AGAIN.\n\nCLOSING THIS POPUP WILL TERMINATE THE PROGRAM");
+
+                    DialogPane dialogPane = alert.getDialogPane();
+                    dialogPane.getStylesheets().add(getClass().getResource("styles/alert.css").toExternalForm());
+
+                    alert.showAndWait();
+                    Platform.exit();
+                });
             }
         }
         catch (Exception e) {
@@ -567,6 +614,21 @@ public class GameController implements Initializable {
             Object response = this.client.read();
             if (response instanceof PokerInfo) {
                 this.gameInstance = (PokerInfo) response;
+            }
+            else {
+                // creates popup if the server doesn't respond with an object of type PokerInfo
+                Platform.runLater(() -> {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("UNABLE TO DEAL CARDS");
+                    alert.setHeaderText("CONNECTION TO SERVER LOST.");
+                    alert.setContentText("MAKE SURE THAT THE SERVER IS RUNNING, THEN TRY AGAIN.\n\nCLOSING THIS POPUP WILL TERMINATE THE PROGRAM");
+
+                    DialogPane dialogPane = alert.getDialogPane();
+                    dialogPane.getStylesheets().add(getClass().getResource("styles/alert.css").toExternalForm());
+
+                    alert.showAndWait();
+                    Platform.exit();
+                });
             }
         }
         catch (Exception e) {
