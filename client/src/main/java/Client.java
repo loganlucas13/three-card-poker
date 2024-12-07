@@ -4,7 +4,7 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 
-public class Client extends Thread{
+public class Client extends Thread {
 	Socket clientSocket;
 
 	ObjectOutputStream out;

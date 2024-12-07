@@ -103,7 +103,7 @@ public class MenuController implements Initializable {
         this.playButton.setDisable(true);
 
         // saves information if the user already input their ip and port and then switched to the rules tab
-        if (!(this.gameInstance.getIp().equals("127.0.0.1") || this.gameInstance.getPort() == -1)) {
+        if (this.gameInstance.getIp().equals("127.0.0.1") && this.gameInstance.getPort() != -1) {
             this.enablePlay();
         }
 

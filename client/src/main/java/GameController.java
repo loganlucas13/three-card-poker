@@ -535,8 +535,8 @@ public class GameController implements Initializable {
 
         winningPane.setCenter(elementGroup);
 
-        // lets the player view the dealer's cards for 2 seconds before moving to the winning screen
-        PauseTransition pause = new PauseTransition(Duration.seconds(2));
+        // lets the player view the dealer's cards for 4 seconds before moving to the winning screen
+        PauseTransition pause = new PauseTransition(Duration.seconds(4));
     	pause.setOnFinished(event -> {
             stage.setScene(winningScene);
         });
