@@ -1,0 +1,27 @@
+.label {
+    -fx-font-size: 20;
+    -fx-alignment: center;
+}
+
+.text-field {
+    -fx-font-size: 20;
+    -fx-background-color: #f2f1da;
+    -fx-padding: 15px;
+    -fx-border-width: 10px;
+    -fx-border-color: #d3c490;
+    -fx-text-fill: #375018;
+    -fx-prompt-text-fill: #b74c4d;
+}
+
+.button {
+    -fx-font-size: 20;
+    -fx-text-fill: #375018;
+    -fx-background-color: #f2f1da;
+    -fx-padding: 15px;
+    -fx-border-width: 10px;
+    -fx-border-color: #d3c490;
+}
+.button:hover {
+    -fx-background-color: #749b43;
+    -fx-border-color: #2d4212;
+}
